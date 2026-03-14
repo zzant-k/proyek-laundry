@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Auth — Premium</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-base: #05060f;
+    --accent-1: #4f6ef7;
+    --accent-2: #8b5cf6;
+    --accent-3: #06b6d4;
+    --accent-glow: rgba(79, 110, 247, 0.35);
+    --glass-bg: rgba(255,255,255,0.055);
+    --glass-border: rgba(255,255,255,0.1);
+    --glass-border-hover: rgba(255,255,255,0.2);
+    --text-primary: #f0f2ff;
+    --text-secondary: rgba(200,206,255,0.55);
+    --text-muted: rgba(200,206,255,0.35);
+    --input-bg: rgba(255,255,255,0.06);
+    --input-border: rgba(255,255,255,0.12);
+    --input-focus: rgba(79,110,247,0.6);
+    --radius-card: 28px;
+    --radius-input: 14px;
+    --radius-btn: 14px;
+    --font-head: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --transition-smooth: cubic-bezier(0.65, 0, 0.35, 1);
+    --transition-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    font-family: var(--font-body);
+    background: var(--bg-base);
+    color: var(--text-primary);
+  }
+
+  /* ── BACKGROUND ── */
+  .bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(79,110,247,0.18) 0%, transparent 65%),
+      radial-gradient(ellipse 60% 50% at 80% 85%, rgba(139,92,246,0.15) 0%, transparent 65%),
+      radial-gradient(ellipse 50% 40% at 50% 50%, rgba(6,182,212,0.06) 0%, transparent 70%),
+      #05060f;
+    will-change: transform;
+  }
+
+  /* Floating blobs */
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(72px);
+    will-change: transform, opacity;
+    pointer-events: none;
+  }
+  .blob-1 {
+    width: 520px; height: 520px;
+    top: -140px; left: -100px;
+    background: radial-gradient(circle, rgba(79,110,247,0.28) 0%, transparent 70%);
+    animation: floatA 18s ease-in-out infinite;
+  }
+  .blob-2 {
+    width: 600px; height: 600px;
+    bottom: -160px; right: -140px;
+    background: radial-gradient(circle, rgba(139,92,246,0.22) 0%, transparent 70%);
+    animation: floatB 22s ease-in-out infinite;
+  }
+  .blob-3 {
+    width: 380px; height: 380px;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    background: radial-gradient(circle, rgba(6,182,212,0.12) 0%, transparent 70%);
+    animation: floatC 15s ease-in-out infinite;
+  }
+  .blob-4 {
+    width: 260px; height: 260px;
+    top: 30%; right: 10%;
+    background: radial-gradient(circle, rgba(244,114,182,0.1) 0%, transparent 70%);
+    animation: floatD 20s ease-in-out infinite;
+  }
+
+  @keyframes floatA {
+    0%,100% { transform: translateY(0px) translateX(0px); }
+    33%      { transform: translateY(40px) translateX(20px); }
+    66%      { transform: translateY(-20px) translateX(35px); }
+  }
+  @keyframes floatB {
+    0%,100% { transform: translateY(0px) translateX(0px); }
+    40%      { transform: translateY(-50px) translateX(-25px); }
+    70%      { transform: translateY(25px) translateX(-40px); }
+  }
+  @keyframes floatC {
+    0%,100% { transform: translate(-50%,-50%) scale(1); }
+    50%      { transform: translate(-50%,-50%) scale(1.18); }
+  }
+  @keyframes floatD {
+    0%,100% { transform: translateY(0px); }
+    50%      { transform: translateY(-35px) translateX(15px); }
+  }
+
+  /* Grid lines overlay */
+  .grid-overlay {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+
+  /* Noise texture */
+  .noise {
+    position: absolute;
+    inset: 0;
+    opacity: 0.032;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+    pointer-events: none;
+  }
+
+  /* ── LAYOUT ── */
+  .scene {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 24px;
+    perspective: 1200px;
+  }
+
+  .auth-card {
+    position: relative;
+    width: 100%;
+    max-width: 960px;
+    height: 600px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-card);
+    box-shadow:
+      0 8px 32px rgba(0,0,0,0.4),
+      0 0 0 1px rgba(255,255,255,0.04),
+      0 0 100px rgba(79,110,247,0.12),
+      inset 0 1px 0 rgba(255,255,255,0.08);
+    overflow: hidden;
+  }
+
+  /* Inner overflow clip for slide */
+  .slide-track-wrapper {
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-card);
+    overflow: hidden;
+  }
+
+  /* Sliding track */
+  .slide-track {
+    display: flex;
+    width: 200%;
+    height: 100%;
+    transform: translateX(0%);
+    transition: transform 0.82s var(--transition-smooth);
+    will-change: transform;
+  }
+  .auth-card.active .slide-track {
+    transform: translateX(-50%);
+  }
+
+  /* Each panel = half track = full card width */
+  .panel {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-shrink: 0;
+  }
+
+  /* ── ILLUSTRATION SIDE ── */
+  .illus-side {
+    width: 45%;
+    flex-shrink: 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 40px 32px;
+    border-right: 1px solid var(--glass-border);
+    overflow: hidden;
+  }
+
+  .illus-side::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 60% at 30% 40%, rgba(79,110,247,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 50% at 80% 80%, rgba(139,92,246,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .illus-brand {
+    position: absolute;
+    top: 28px;
+    left: 32px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .illus-brand-dot {
+    width: 28px; height: 28px;
+    background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .illus-brand-dot svg { width: 14px; height: 14px; }
+  .illus-brand-name {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+  }
+
+  .illus-svg-wrap {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    position: relative;
+  }
+
+  .illus-svg {
+    width: 200px;
+    height: 200px;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .illus-svg.hidden {
+    opacity: 0;
+    transform: scale(0.92) translateY(12px);
+    position: absolute;
+  }
+  .illus-svg.visible {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+
+  .illus-copy {
+    text-align: center;
+    z-index: 1;
+  }
+  .illus-copy h2 {
+    font-family: var(--font-head);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+  .illus-copy p {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    max-width: 200px;
+    margin: 0 auto;
+  }
+
+  /* Floating badges on illustration */
+  .float-badge {
+    position: absolute;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 100px;
+    padding: 6px 12px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+    animation: badgeFloat 6s ease-in-out infinite;
+  }
+  .float-badge:nth-child(2) { animation-delay: -2s; }
+  .float-badge:nth-child(3) { animation-delay: -4s; }
+  .float-badge .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 6px #22c55e;
+  }
+  @keyframes badgeFloat {
+    0%,100% { transform: translateY(0px); }
+    50% { transform: translateY(-5px); }
+  }
+  .badge-ssl { bottom: 52px; left: 18px; }
+  .badge-users { top: 68px; right: 8px; }
+
+  /* ── FORM SIDE ── */
+  .form-side {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 44px 40px;
+    overflow-y: auto;
+  }
+  .form-side::-webkit-scrollbar { display: none; }
+
+  .form-head {
+    margin-bottom: 32px;
+  }
+  .form-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(79,110,247,0.12);
+    border: 1px solid rgba(79,110,247,0.25);
+    border-radius: 100px;
+    padding: 4px 12px;
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(160,180,255,0.9);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .form-tag-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--accent-1);
+    box-shadow: 0 0 6px var(--accent-1);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .form-head h1 {
+    font-family: var(--font-head);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.04em;
+    line-height: 1.15;
+    margin-bottom: 6px;
+  }
+  .form-head p {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* Input group */
+  .input-row {
+    display: flex;
+    gap: 12px;
+  }
+  .input-row .field { flex: 1; }
+
+  .field {
+    margin-bottom: 14px;
+  }
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    letter-spacing: 0.02em;
+  }
+  .input-wrap {
+    position: relative;
+  }
+  .input-wrap svg {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    color: var(--text-muted);
+    transition: color 0.25s ease;
+    pointer-events: none;
+  }
+  .input-wrap input {
+    width: 100%;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: var(--radius-input);
+    padding: 13px 14px 13px 40px;
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    font-weight: 400;
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+    -webkit-appearance: none;
+  }
+  .input-wrap input::placeholder {
+    color: var(--text-muted);
+  }
+  .input-wrap input:focus {
+    border-color: rgba(79,110,247,0.7);
+    background: rgba(79,110,247,0.06);
+    box-shadow: 0 0 0 3px rgba(79,110,247,0.15), 0 0 20px rgba(79,110,247,0.08);
+  }
+  .input-wrap input:focus + svg,
+  .input-wrap:focus-within svg {
+    color: rgba(130,160,255,0.7);
+  }
+
+  /* Password toggle */
+  .pw-toggle {
+    position: absolute;
+    right: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    padding: 2px;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+  }
+  .pw-toggle:hover { color: var(--text-secondary); }
+  .pw-toggle svg { width: 16px; height: 16px; }
+
+  /* Extras row */
+  .extras {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    margin-top: 4px;
+  }
+  .checkbox-wrap {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    cursor: pointer;
+  }
+  .checkbox-wrap input[type=checkbox] { display: none; }
+  .custom-check {
+    width: 16px; height: 16px;
+    border: 1.5px solid var(--input-border);
+    border-radius: 5px;
+    background: var(--input-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+  }
+  .checkbox-wrap input:checked ~ .custom-check {
+    background: var(--accent-1);
+    border-color: var(--accent-1);
+  }
+  .custom-check svg { width: 9px; height: 9px; opacity: 0; transition: opacity 0.2s; }
+  .checkbox-wrap input:checked ~ .custom-check svg { opacity: 1; }
+  .checkbox-wrap span { font-size: 12px; color: var(--text-secondary); }
+  .link-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: rgba(130,160,255,0.85);
+    padding: 0;
+    transition: color 0.2s;
+  }
+  .link-btn:hover { color: #fff; }
+
+  /* Submit button */
+  .btn-submit {
+    width: 100%;
+    height: 48px;
+    background: #6c5ce7;
+    border: none;
+    border-radius: var(--radius-btn);
+    font-family: var(--font-head);
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s var(--transition-spring), box-shadow 0.2s ease;
+    letter-spacing: -0.01em;
+    margin-bottom: 20px;
+  }
+  .btn-submit::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: none;
+    pointer-events: none;
+  }
+  .btn-submit::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 60%;
+    height: 100%;
+    background: none;
+    transition: left 0s;
+  }
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(79,110,247,0.4), 0 0 40px rgba(120,78,247,0.2);
+  }
+  .btn-submit:hover::after {
+    left: 150%;
+    transition: left 0.55s ease;
+  }
+  .btn-submit:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 12px rgba(79,110,247,0.3);
+  }
+
+  /* Divider */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--glass-border);
+  }
+  .divider span {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* Social buttons */
+  .socials {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .btn-social {
+    flex: 1;
+    height: 40px;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+  }
+  .btn-social:hover {
+    background: rgba(255,255,255,0.08);
+    border-color: var(--glass-border-hover);
+    color: var(--text-primary);
+    transform: translateY(-1px);
+  }
+  .btn-social svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+  /* Switch prompt */
+  .switch-prompt {
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--text-secondary);
+  }
+  .switch-prompt button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    font-weight: 600;
+    color: rgba(130,160,255,0.9);
+    padding: 0;
+    margin-left: 4px;
+    transition: color 0.2s;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: rgba(130,160,255,0.3);
+  }
+  .switch-prompt button:hover { color: #fff; text-decoration-color: rgba(255,255,255,0.5); }
+
+  /* Terms row for register */
+  .terms-row {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: -8px;
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+  .terms-row a {
+    color: rgba(130,160,255,0.7);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+  }
+
+  /* Strength meter */
+  .strength-bar {
+    display: flex;
+    gap: 4px;
+    margin-top: 6px;
+  }
+  .strength-seg {
+    flex: 1;
+    height: 3px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.1);
+    transition: background 0.3s ease;
+  }
+  .strength-seg.weak   { background: #ef4444; }
+  .strength-seg.fair   { background: #f59e0b; }
+  .strength-seg.strong { background: #22c55e; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 720px) {
+    .auth-card { height: auto; min-height: 580px; }
+    .illus-side { display: none; }
+    .form-side { padding: 36px 28px; }
+    .panel { width: 100%; }
+    .slide-track { width: 200%; }
+    .auth-card.active .slide-track { transform: translateX(-50%); }
+  }
+  @media (max-width: 500px) {
+    .scene { padding: 16px; }
+    .form-side { padding: 28px 20px; }
+    .input-row { flex-direction: column; gap: 0; }
+  }
+
+  /* ── ENTRY ANIMATION ── */
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(20px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .auth-card {
+    animation: cardIn 0.7s cubic-bezier(0.34,1.2,0.64,1) both;
+  }
+
+  /* Stagger fields on load */
+  .field {
+    animation: fadeUp 0.5s ease both;
+  }
+  .field:nth-child(1) { animation-delay: 0.15s; }
+  .field:nth-child(2) { animation-delay: 0.22s; }
+  .field:nth-child(3) { animation-delay: 0.29s; }
+  .field:nth-child(4) { animation-delay: 0.36s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<!-- Background -->
+<div class="bg">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="blob blob-4"></div>
+  <div class="grid-overlay"></div>
+  <div class="noise"></div>
+</div>
+
+<!-- Scene -->
+<div class="scene">
+  <div class="auth-card" id="authCard">
+    <div class="slide-track-wrapper">
+      <div class="slide-track" id="slideTrack">
+
+        <!-- ═══════════════════ LOGIN PANEL ═══════════════════ -->
+        <div class="panel" id="panelLogin">
+          <!-- Illustration -->
+          <div class="illus-side">
+            <div class="illus-brand">
+              <div class="illus-brand-dot">
+                <svg viewBox="0 0 14 14" fill="none"><path d="M7 1L13 7L7 13M1 7H13" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <span class="illus-brand-name">Nexus</span>
+            </div>
+
+            <div class="illus-svg-wrap">
+              <!-- Login SVG illustration -->
+              <svg class="illus-svg visible" id="illusLogin" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Background ring -->
+                <circle cx="100" cy="100" r="80" stroke="rgba(79,110,247,0.15)" stroke-width="1.5" stroke-dasharray="6 4"/>
+                <circle cx="100" cy="100" r="62" stroke="rgba(139,92,246,0.12)" stroke-width="1" stroke-dasharray="3 5"/>
+                <!-- Shield body -->
+                <path d="M100 32 L136 50 L136 96 C136 120 120 138 100 148 C80 138 64 120 64 96 L64 50 Z" fill="rgba(79,110,247,0.12)" stroke="rgba(79,110,247,0.5)" stroke-width="1.5"/>
+                <!-- Lock body -->
+                <rect x="86" y="95" width="28" height="22" rx="5" fill="rgba(130,160,255,0.2)" stroke="rgba(130,160,255,0.6)" stroke-width="1.5"/>
+                <!-- Lock shackle -->
+                <path d="M90 95 L90 88 A10 10 0 0 1 110 88 L110 95" stroke="rgba(130,160,255,0.7)" stroke-width="2" fill="none" stroke-linecap="round"/>
+                <!-- Keyhole -->
+                <circle cx="100" cy="104" r="3" fill="rgba(130,160,255,0.8)"/>
+                <rect x="98.5" y="104" width="3" height="7" rx="1.5" fill="rgba(130,160,255,0.8)"/>
+                <!-- Sparkle dots -->
+                <circle cx="58" cy="72" r="2.5" fill="rgba(79,110,247,0.6)" class="sparkle"/>
+                <circle cx="142" cy="88" r="2" fill="rgba(139,92,246,0.6)" class="sparkle"/>
+                <circle cx="135" cy="130" r="3" fill="rgba(6,182,212,0.5)" class="sparkle"/>
+                <circle cx="65" cy="128" r="2" fill="rgba(244,114,182,0.5)" class="sparkle"/>
+                <!-- Check mark inner -->
+                <path d="M92 106L97 111L108 100" stroke="rgba(79,200,150,0.9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0" id="checkMark"/>
+              </svg>
+            </div>
+
+            <div class="illus-copy">
+              <h2>Welcome back</h2>
+              <p>Sign in securely and pick up exactly where you left off.</p>
+            </div>
+
+            <div class="float-badge badge-ssl">
+              <div class="dot"></div>
+              SSL Encrypted
+            </div>
+            <div class="float-badge badge-users">
+              <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><circle cx="5" cy="4" r="2.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 11C1 8.8 2.8 7 5 7H7C9.2 7 11 8.8 11 11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+              12k+ users
+            </div>
+          </div>
+
+          <!-- Form -->
+          <div class="form-side">
+            <div class="form-head">
+              <div class="form-tag"><span class="form-tag-dot"></span> Login</div>
+              <h1>Sign in to<br>your account</h1>
+              <p>Enter your credentials to continue</p>
+            </div>
+
+            <form onsubmit="return false">
+              <div class="field">
+                <label>Email address</label>
+                <div class="input-wrap">
+                  <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="2" y="5" width="16" height="12" rx="2"/><path d="M2 8l8 5 8-5"/></svg>
+                  <input type="email" placeholder="hello@example.com" autocomplete="email"/>
+                </div>
+              </div>
+              <div class="field">
+                <label>Password</label>
+                <div class="input-wrap">
+                  <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="5" y="9" width="10" height="8" rx="2"/><path d="M7 9V7a3 3 0 016 0v2"/><circle cx="10" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg>
+                  <input type="password" id="loginPw" placeholder="••••••••"/>
+                  <button type="button" class="pw-toggle" onclick="togglePw('loginPw',this)">
+                    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10s3-6 8-6 8 6 8 6-3 6-8 6-8-6-8-6z"/><circle cx="10" cy="10" r="2.5"/></svg>
+                  </button>
+                </div>
+              </div>
+              <div class="extras">
+                <label class="checkbox-wrap">
+                  <input type="checkbox" id="rememberMe"/>
+                  <div class="custom-check">
+                    <svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </div>
+                  <span>Remember me</span>
+                </label>
+                <button type="button" class="link-btn">Forgot password?</button>
+              </div>
+              <button type="submit" class="btn-submit" onclick="handleLogin(this)">
+                Sign in →
+              </button>
+              <div class="divider"><span>or continue with</span></div>
+              <div class="socials">
+                <button type="button" class="btn-social">
+                  <svg viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                  Google
+                </button>
+                <button type="button" class="btn-social">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                  GitHub
+                </button>
+              </div>
+              <div class="switch-prompt">
+                Don't have an account?
+                <button type="button" onclick="switchToRegister()">Create one</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- ═══════════════════ REGISTER PANEL ═══════════════════ -->
+        <div class="panel" id="panelRegister">
+          <!-- Illustration -->
+          <div class="illus-side">
+            <div class="illus-brand">
+              <div class="illus-brand-dot">
+                <svg viewBox="0 0 14 14" fill="none"><path d="M7 1L13 7L7 13M1 7H13" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <span class="illus-brand-name">Nexus</span>
+            </div>
+
+            <div class="illus-svg-wrap">
+              <!-- Register SVG illustration -->
+              <svg class="illus-svg visible" id="illusRegister" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Orbit rings -->
+                <ellipse cx="100" cy="100" rx="78" ry="78" stroke="rgba(139,92,246,0.12)" stroke-width="1.5" stroke-dasharray="5 5"/>
+                <!-- User silhouette center -->
+                <circle cx="100" cy="84" r="22" fill="rgba(139,92,246,0.15)" stroke="rgba(139,92,246,0.5)" stroke-width="1.5"/>
+                <circle cx="100" cy="80" r="10" fill="rgba(169,120,255,0.3)" stroke="rgba(169,120,255,0.7)" stroke-width="1.5"/>
+                <path d="M78 112 C78 100 88 94 100 94 C112 94 122 100 122 112" stroke="rgba(139,92,246,0.6)" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+                <!-- Plus / add icon badge -->
+                <circle cx="124" cy="68" r="14" fill="rgba(6,182,212,0.15)" stroke="rgba(6,182,212,0.5)" stroke-width="1.5"/>
+                <path d="M124 63 V73 M119 68 H129" stroke="rgba(6,182,212,0.9)" stroke-width="2" stroke-linecap="round"/>
+                <!-- Stars around -->
+                <path d="M52 60 L53.5 55 L55 60 L60 61.5 L55 63 L53.5 68 L52 63 L47 61.5 Z" fill="rgba(244,114,182,0.6)"/>
+                <path d="M148 128 L149 124 L150 128 L154 129 L150 130 L149 134 L148 130 L144 129 Z" fill="rgba(79,110,247,0.6)"/>
+                <circle cx="64" cy="140" r="3" fill="rgba(6,182,212,0.5)"/>
+                <circle cx="140" cy="58" r="2" fill="rgba(244,114,182,0.4)"/>
+                <!-- Feature chips -->
+                <rect x="30" y="105" width="42" height="18" rx="9" fill="rgba(79,110,247,0.1)" stroke="rgba(79,110,247,0.3)" stroke-width="1"/>
+                <text x="51" y="118" text-anchor="middle" font-size="7" fill="rgba(130,160,255,0.8)" font-family="DM Sans, sans-serif">Free Plan</text>
+                <rect x="128" y="105" width="42" height="18" rx="9" fill="rgba(139,92,246,0.1)" stroke="rgba(139,92,246,0.3)" stroke-width="1"/>
+                <text x="149" y="118" text-anchor="middle" font-size="7" fill="rgba(169,130,255,0.8)" font-family="DM Sans, sans-serif">Instant</text>
+              </svg>
+            </div>
+
+            <div class="illus-copy">
+              <h2>Join today</h2>
+              <p>Create your account in seconds and start building.</p>
+            </div>
+
+            <div class="float-badge badge-ssl">
+              <div class="dot"></div>
+              No credit card
+            </div>
+            <div class="float-badge badge-users">
+              <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M10 6H2M2 6L5 3M2 6L5 9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Free forever
+            </div>
+          </div>
+
+          <!-- Form -->
+          <div class="form-side">
+            <div class="form-head">
+              <div class="form-tag"><span class="form-tag-dot"></span> Register</div>
+              <h1>Create your<br>account</h1>
+              <p>Already have one? <button type="button" class="link-btn" onclick="switchToLogin()">Sign in here</button></p>
+            </div>
+
+            <form onsubmit="return false">
+              <div class="input-row">
+                <div class="field">
+                  <label>First name</label>
+                  <div class="input-wrap">
+                    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="10" cy="7" r="3.5"/><path d="M3 17c0-3.87 3.13-7 7-7s7 3.13 7 7"/></svg>
+                    <input type="text" placeholder="Jane"/>
+                  </div>
+                </div>
+                <div class="field">
+                  <label>Last name</label>
+                  <div class="input-wrap">
+                    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="10" cy="7" r="3.5"/><path d="M3 17c0-3.87 3.13-7 7-7s7 3.13 7 7"/></svg>
+                    <input type="text" placeholder="Doe"/>
+                  </div>
+                </div>
+              </div>
+              <div class="field">
+                <label>Email address</label>
+                <div class="input-wrap">
+                  <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="2" y="5" width="16" height="12" rx="2"/><path d="M2 8l8 5 8-5"/></svg>
+                  <input type="email" placeholder="hello@example.com" autocomplete="email"/>
+                </div>
+              </div>
+              <div class="field">
+                <label>Password</label>
+                <div class="input-wrap">
+                  <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="5" y="9" width="10" height="8" rx="2"/><path d="M7 9V7a3 3 0 016 0v2"/><circle cx="10" cy="14" r="1.2" fill="currentColor" stroke="none"/></svg>
+                  <input type="password" id="regPw" placeholder="Min. 8 characters" oninput="checkStrength(this)"/>
+                  <button type="button" class="pw-toggle" onclick="togglePw('regPw',this)">
+                    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 10s3-6 8-6 8 6 8 6-3 6-8 6-8-6-8-6z"/><circle cx="10" cy="10" r="2.5"/></svg>
+                  </button>
+                </div>
+                <div class="strength-bar" id="strengthBar">
+                  <div class="strength-seg" id="s1"></div>
+                  <div class="strength-seg" id="s2"></div>
+                  <div class="strength-seg" id="s3"></div>
+                  <div class="strength-seg" id="s4"></div>
+                </div>
+              </div>
+
+              <div class="terms-row">
+                By creating an account you agree to our <a>Terms of Service</a> and <a>Privacy Policy</a>
+              </div>
+
+              <button type="submit" class="btn-submit" onclick="handleRegister(this)">
+                Create account →
+              </button>
+              <div class="divider"><span>or sign up with</span></div>
+              <div class="socials">
+                <button type="button" class="btn-social">
+                  <svg viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                  Google
+                </button>
+                <button type="button" class="btn-social">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                  GitHub
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </div><!-- /slide-track -->
+    </div><!-- /wrapper -->
+  </div><!-- /auth-card -->
+</div><!-- /scene -->
+
+<script>
+  const card = document.getElementById('authCard');
+  let isRegister = false;
+
+  function switchToRegister() {
+    isRegister = true;
+    card.classList.add('active');
+  }
+  function switchToLogin() {
+    isRegister = false;
+    card.classList.remove('active');
+  }
+
+  function togglePw(id, btn) {
+    const input = document.getElementById(id);
+    const isText = input.type === 'text';
+    input.type = isText ? 'password' : 'text';
+    // swap icon
+    btn.querySelector('svg').style.opacity = isText ? '1' : '0.5';
+  }
+
+  function checkStrength(input) {
+    const val = input.value;
+    const segs = ['s1','s2','s3','s4'];
+    let score = 0;
+    if (val.length >= 8) score++;
+    if (/[A-Z]/.test(val)) score++;
+    if (/[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+
+    segs.forEach((id, i) => {
+      const el = document.getElementById(id);
+      el.className = 'strength-seg';
+      if (i < score) {
+        if (score <= 1) el.classList.add('weak');
+        else if (score <= 2) el.classList.add('fair');
+        else el.classList.add('strong');
+      }
+    });
+  }
+
+  function handleLogin(btn) {
+    btn.textContent = 'Signing in…';
+    btn.style.opacity = '0.7';
+    btn.style.pointerEvents = 'none';
+    setTimeout(() => {
+      btn.textContent = '✓ Welcome back!';
+      btn.style.background = '#16a34a';
+      btn.style.opacity = '1';
+    }, 1200);
+  }
+
+  function handleRegister(btn) {
+    btn.textContent = 'Ceating account…';
+    btn.style.opacity = '0.7';
+    btn.style.pointerEvents = 'none';
+    setTimeout(() => {
+      btn.textContent = '✓ Account created!';
+      btn.style.background = '#16a34a';
+      btn.style.opacity = '1';
+    }, 1400);
+  }
+
+  // Checkbox interactivity
+  document.querySelectorAll('.checkbox-wrap').forEach(wrap => {
+    wrap.addEventListener('click', () => {
+      const cb = wrap.querySelector('input[type=checkbox]');
+      cb.checked = !cb.checked;
+    });
+  });
+</script>
+</body>
+</html>

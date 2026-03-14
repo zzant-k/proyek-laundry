@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Logout Popup</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Jost', sans-serif;
+    background: #f7f0f3;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    padding: 40px 20px;
+  }
+
+  .label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #c9a0b0;
+    text-align: center;
+    margin-bottom: 12px;
+    font-weight: 400;
+  }
+
+  /* CARD */
+  .card {
+    width: 400px;
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 36px 40px 36px;
+    box-shadow: 0 4px 40px rgba(180, 100, 130, 0.1);
+    position: relative;
+    animation: rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 40px; right: 40px;
+    height: 1.5px;
+    border-radius: 0 0 2px 2px;
+    background: linear-gradient(90deg, transparent, #e8a0b8, transparent);
+  }
+
+  .card.admin::before {
+    background: linear-gradient(90deg, transparent, #ddb97a, transparent);
+  }
+
+  /* ILLUSTRATION AREA */
+  .illus-area {
+    width: 100%;
+    height: 140px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 28px;
+    background: #fdf5f8;
+    position: relative;
+    overflow: hidden;
+  }
+  .illus-area.admin {
+    background: #fdf8f2;
+  }
+
+  /* subtle dot grid texture */
+  .illus-area::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, #e8c0cf 1px, transparent 1px);
+    background-size: 18px 18px;
+    opacity: 0.35;
+  }
+  .illus-area.admin::before {
+    background-image: radial-gradient(circle, #e0c49a 1px, transparent 1px);
+  }
+
+  .illus-svg {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* TEXT */
+  .eyebrow {
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: #d4889f;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .eyebrow.admin { color: #c49a6c; }
+
+  .title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 25px;
+    font-weight: 300;
+    color: #2d1a24;
+    line-height: 1.3;
+    margin-bottom: 10px;
+  }
+
+  .desc {
+    font-size: 13px;
+    color: #9e7a88;
+    line-height: 1.7;
+    font-weight: 300;
+    margin-bottom: 26px;
+  }
+  .desc.admin { color: #a08060; }
+
+  /* SESSION */
+  .session {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 14px;
+    background: #fdf8fa;
+    border-radius: 10px;
+    margin-bottom: 24px;
+    border: 1px solid #f0e4eb;
+  }
+  .session.admin { background: #fdf9f5; border-color: #ede0d0; }
+
+  .session-avatar {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f2a0b8, #d46880);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: #fff; font-weight: 500; flex-shrink: 0;
+  }
+  .session-avatar.admin { background: linear-gradient(135deg, #e8c49a, #c49a6c); }
+
+  .session-name { font-size: 13px; color: #5c3a48; font-weight: 400; }
+  .session-role { font-size: 11px; color: #c0909e; margin-top: 1px; }
+  .session-role.admin { color: #c49a6c; }
+
+  /* DIVIDER */
+  .divider { height: 1px; background: #f2e8ed; margin-bottom: 24px; }
+  .divider.admin { background: #f0e8d8; }
+
+  /* BUTTONS */
+  .btn-row { display: flex; gap: 10px; }
+
+  .btn {
+    flex: 1; height: 44px;
+    border-radius: 10px;
+    font-family: 'Jost', sans-serif;
+    font-size: 13px; font-weight: 400;
+    letter-spacing: 0.5px;
+    cursor: pointer; border: none;
+    transition: all 0.2s ease;
+  }
+
+  .btn-ghost {
+    background: transparent; color: #b08898;
+    border: 1px solid #ead8e2;
+  }
+  .btn-ghost:hover { background: #fdf0f5; border-color: #d4a0b8; color: #8d6070; }
+  .btn-ghost.admin { border-color: #e5d5c0; color: #b09070; }
+  .btn-ghost.admin:hover { background: #fdf5ec; border-color: #c4a070; }
+
+  .btn-confirm { background: #d4607c; color: #fff; letter-spacing: 0.8px; }
+  .btn-confirm:hover { background: #c0546e; }
+  .btn-confirm.admin { background: #c49a6c; }
+  .btn-confirm.admin:hover { background: #b08a5c; }
+
+  /* CLOSE */
+  .close {
+    position: absolute; top: 18px; right: 20px;
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: #cdb0bb; font-size: 18px;
+    border-radius: 50%; transition: all 0.2s;
+    border: none; background: none;
+  }
+  .close:hover { color: #8d6070; background: #fdf0f5; }
+
+  /* petal float animation */
+  @keyframes floatUp {
+    0%   { transform: translateY(0) rotate(0deg); opacity: 0.9; }
+    100% { transform: translateY(-55px) rotate(25deg); opacity: 0; }
+  }
+  .petal-anim {
+    animation: floatUp 2.8s ease-in-out infinite;
+  }
+  .petal-anim:nth-child(2) { animation-delay: 0.6s; }
+  .petal-anim:nth-child(3) { animation-delay: 1.3s; }
+
+  @keyframes gentleRock {
+    0%, 100% { transform: rotate(-4deg); }
+    50%       { transform: rotate(4deg); }
+  }
+  .rock { animation: gentleRock 4s ease-in-out infinite; transform-origin: center bottom; }
+
+  @keyframes shimmer {
+    0%, 100% { opacity: 0.6; }
+    50%       { opacity: 1; }
+  }
+  .shimmer { animation: shimmer 2.5s ease-in-out infinite; }
+</style>
+</head>
+<body>
+
+<!-- ─── USER POPUP ─── -->
+<div>
+  <p class="label">User</p>
+  <div class="card">
+    <button class="close">×</button>
+
+    <!-- Illustration: girl walking through a floral arch / waving goodbye -->
+    <div class="illus-area">
+      <svg class="illus-svg" width="220" height="110" viewBox="0 0 220 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+        <!-- ground line -->
+        <line x1="30" y1="90" x2="190" y2="90" stroke="#f0c8d8" stroke-width="1" stroke-linecap="round"/>
+
+        <!-- Door frame -->
+        <rect x="140" y="30" width="44" height="60" rx="3" fill="white" stroke="#e8a8c0" stroke-width="1.5"/>
+        <!-- Door panel detail -->
+        <rect x="146" y="38" width="14" height="18" rx="2" fill="none" stroke="#f0c0d4" stroke-width="1"/>
+        <rect x="166" y="38" width="12" height="18" rx="2" fill="none" stroke="#f0c0d4" stroke-width="1"/>
+        <rect x="146" y="62" width="32" height="20" rx="2" fill="none" stroke="#f0c0d4" stroke-width="1"/>
+        <!-- Door knob -->
+        <circle cx="158" cy="63" r="2.5" fill="#e8a0b8"/>
+        <!-- Door ajar shadow -->
+        <path d="M140 30 L128 36 L128 93 L140 90" fill="#fce8f0" stroke="#e8a8c0" stroke-width="1"/>
+
+        <!-- Path / stepping stones -->
+        <ellipse cx="115" cy="91" rx="9" ry="3" fill="#f5d5e5" opacity="0.7"/>
+        <ellipse cx="96" cy="91" rx="7" ry="2.5" fill="#f5d5e5" opacity="0.5"/>
+        <ellipse cx="78" cy="91" rx="6" ry="2.5" fill="#f5d5e5" opacity="0.4"/>
+
+        <!-- Figure - girl walking toward door -->
+        <!-- shadow -->
+        <ellipse cx="112" cy="91" rx="10" ry="3" fill="#e8b0c8" opacity="0.25"/>
+        <!-- dress/skirt -->
+        <path d="M106 70 Q110 84 104 89 Q112 87 120 89 Q114 84 118 70 Z" fill="#e8a0b8"/>
+        <!-- body -->
+        <rect x="107" y="57" width="10" height="16" rx="5" fill="#f2c0d0"/>
+        <!-- head -->
+        <circle cx="112" cy="51" r="7" fill="#f5d0be"/>
+        <!-- hair -->
+        <path d="M105 49 Q112 40 119 49 Q117 44 112 43 Q107 44 105 49Z" fill="#8b4a6b"/>
+        <path d="M105 49 Q103 55 106 58" stroke="#8b4a6b" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <!-- waving arm -->
+        <path d="M107 62 Q98 55 94 52" stroke="#f2c0d0" stroke-width="2.5" stroke-linecap="round" fill="none" class="rock"/>
+        <!-- hand wave -->
+        <circle cx="94" cy="51" r="3" fill="#f2c0d0"/>
+        <!-- other arm -->
+        <path d="M117 62 Q120 67 119 71" stroke="#f2c0d0" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <!-- legs -->
+        <path d="M109 88 Q107 91 106 90" stroke="#e890b0" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <path d="M115 88 Q116 91 117 90" stroke="#e890b0" stroke-width="2" stroke-linecap="round" fill="none"/>
+
+        <!-- Floating rose petals -->
+        <g class="petal-anim" style="transform-origin: 75px 72px">
+          <path d="M72 75 Q75 70 78 75 Q75 80 72 75Z" fill="#e8a0b8" opacity="0.8" transform="translate(0,0) rotate(-20, 75, 75)"/>
+        </g>
+        <g class="petal-anim" style="transform-origin: 55px 68px">
+          <path d="M52 71 Q55 66 58 71 Q55 76 52 71Z" fill="#f0b8cc" opacity="0.7" transform="rotate(10, 55, 71)"/>
+        </g>
+        <g class="petal-anim" style="transform-origin: 88px 60px">
+          <path d="M85 63 Q88 58 91 63 Q88 68 85 63Z" fill="#d4889f" opacity="0.65" transform="rotate(-35, 88, 63)"/>
+        </g>
+
+        <!-- Small roses on left side -->
+        <!-- Rose 1 -->
+        <circle cx="48" cy="78" r="5" fill="#e8a0b8" opacity="0.6"/>
+        <circle cx="46" cy="76" r="3" fill="#d4789a" opacity="0.7"/>
+        <path d="M48 83 L48 90" stroke="#b0d090" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M48 87 L44 85" stroke="#b0d090" stroke-width="1" stroke-linecap="round"/>
+
+        <!-- Rose 2 -->
+        <circle cx="62" cy="82" r="4" fill="#f0b0c8" opacity="0.55"/>
+        <circle cx="60" cy="80" r="2.5" fill="#e08090" opacity="0.65"/>
+        <path d="M62 86 L62 90" stroke="#b0d090" stroke-width="1.5" stroke-linecap="round"/>
+
+        <!-- Rose buds right side -->
+        <circle cx="175" cy="62" r="3.5" fill="#e8a0b8" opacity="0.5"/>
+        <path d="M175 65 L175 72" stroke="#b0d090" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M175 69 L178 67" stroke="#b0d090" stroke-width="1" stroke-linecap="round"/>
+
+        <!-- sparkle stars -->
+        <g class="shimmer">
+          <path d="M68 50 L69 53 L72 54 L69 55 L68 58 L67 55 L64 54 L67 53 Z" fill="#e8a0b8" opacity="0.6" transform="scale(0.7) translate(28, 18)"/>
+        </g>
+        <g class="shimmer" style="animation-delay:1s">
+          <path d="M155 42 L156 44 L158 45 L156 46 L155 48 L154 46 L152 45 L154 44 Z" fill="#d4889f" opacity="0.5" transform="scale(0.6)"/>
+        </g>
+      </svg>
+    </div>
+
+    <p class="eyebrow">Keluar Akun</p>
+    <h2 class="title">Kamu yakin ingin<br><em>meninggalkan kami?</em></h2>
+    <p class="desc">Semua aktivitasmu telah tersimpan dengan aman. Kamu bisa kembali kapan saja — kami selalu di sini untukmu.</p>
+
+    <div class="session">
+      <div class="session-avatar">S</div>
+      <div>
+        <div class="session-name">Sarah Putri</div>
+        <div class="session-role">Pengguna Aktif</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-ghost">Batal</button>
+      <button class="btn btn-confirm">Ya, Keluar</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ─── ADMIN POPUP ─── -->
+<div>
+  <p class="label">Admin</p>
+  <div class="card admin" style="animation-delay: 0.1s;">
+    <button class="close">×</button>
+
+    <!-- Illustration: crowned shield / key locking a gate with roses -->
+    <div class="illus-area admin">
+      <svg class="illus-svg" width="220" height="110" viewBox="0 0 220 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+        <!-- ground -->
+        <line x1="30" y1="90" x2="190" y2="90" stroke="#e8d0b0" stroke-width="1" stroke-linecap="round"/>
+
+        <!-- Gate posts -->
+        <rect x="72" y="28" width="10" height="62" rx="3" fill="#f0e0c8" stroke="#d4b890" stroke-width="1.2"/>
+        <rect x="138" y="28" width="10" height="62" rx="3" fill="#f0e0c8" stroke="#d4b890" stroke-width="1.2"/>
+
+        <!-- Gate top arch -->
+        <path d="M72 28 Q110 8 148 28" fill="none" stroke="#d4b890" stroke-width="1.5"/>
+
+        <!-- Gate bars -->
+        <line x1="90"  y1="28" x2="90"  y2="90" stroke="#d4b890" stroke-width="1.2"/>
+        <line x1="103" y1="24" x2="103" y2="90" stroke="#d4b890" stroke-width="1.2"/>
+        <line x1="117" y1="24" x2="117" y2="90" stroke="#d4b890" stroke-width="1.2"/>
+        <line x1="130" y1="28" x2="130" y2="90" stroke="#d4b890" stroke-width="1.2"/>
+
+        <!-- Horizontal cross bars -->
+        <line x1="72" y1="52" x2="148" y2="52" stroke="#d4b890" stroke-width="1"/>
+        <line x1="72" y1="70" x2="148" y2="70" stroke="#d4b890" stroke-width="1"/>
+
+        <!-- Gate finials (spear tips on bars) -->
+        <polygon points="90,22 93,28 87,28" fill="#c4a870"/>
+        <polygon points="103,18 106,24 100,24" fill="#c4a870"/>
+        <polygon points="117,18 120,24 114,24" fill="#c4a870"/>
+        <polygon points="130,22 133,28 127,28" fill="#c4a870"/>
+
+        <!-- Crown centered above gate -->
+        <g transform="translate(95, 2)">
+          <!-- Crown base -->
+          <rect x="0" y="14" width="30" height="8" rx="2" fill="#d4a870"/>
+          <!-- Crown points -->
+          <polygon points="0,14 5,4 10,14" fill="#d4a870"/>
+          <polygon points="10,14 15,0 20,14" fill="#c49060"/>
+          <polygon points="20,14 25,4 30,14" fill="#d4a870"/>
+          <!-- Gems -->
+          <circle cx="5"  cy="10" r="2" fill="#e8a0b8"/>
+          <circle cx="15" cy="6"  r="2.5" fill="#c8485c"/>
+          <circle cx="25" cy="10" r="2" fill="#e8a0b8"/>
+          <!-- Crown base dots -->
+          <circle cx="8"  cy="17" r="1.2" fill="#f0e0c0"/>
+          <circle cx="15" cy="17" r="1.2" fill="#f0e0c0"/>
+          <circle cx="22" cy="17" r="1.2" fill="#f0e0c0"/>
+        </g>
+
+        <!-- Lock at gate center -->
+        <rect x="103" y="56" width="14" height="11" rx="2.5" fill="#c49a6c" stroke="#b08850" stroke-width="1"/>
+        <path d="M106 56 Q106 51 110 51 Q114 51 114 56" stroke="#b08850" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <circle cx="110" cy="61" r="2" fill="#8b6030"/>
+
+        <!-- Gold key hanging -->
+        <g transform="translate(150, 48)">
+          <!-- key shaft -->
+          <line x1="0" y1="0" x2="18" y2="18" stroke="#d4a060" stroke-width="2" stroke-linecap="round"/>
+          <!-- key bow (ring) -->
+          <circle cx="0" cy="0" r="7" fill="none" stroke="#d4a060" stroke-width="2"/>
+          <circle cx="0" cy="0" r="3" fill="none" stroke="#d4a060" stroke-width="1.5"/>
+          <!-- key teeth -->
+          <line x1="12" y1="12" x2="15" y2="9"  stroke="#d4a060" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="15" y1="15" x2="18" y2="12" stroke="#d4a060" stroke-width="1.5" stroke-linecap="round"/>
+        </g>
+
+        <!-- Roses flanking the gate -->
+        <!-- Left rose cluster -->
+        <circle cx="50" cy="72" r="7" fill="#e8b890" opacity="0.55"/>
+        <circle cx="48" cy="70" r="4.5" fill="#d4985c" opacity="0.7"/>
+        <path d="M50 79 L50 90" stroke="#90b870" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M50 85 L46 82" stroke="#90b870" stroke-width="1.2" stroke-linecap="round"/>
+        <path d="M50 83 L54 80" stroke="#90b870" stroke-width="1.2" stroke-linecap="round"/>
+
+        <circle cx="60" cy="80" r="5" fill="#f0c8a0" opacity="0.5"/>
+        <circle cx="58" cy="78" r="3" fill="#d4a070" opacity="0.65"/>
+        <path d="M60 85 L60 90" stroke="#90b870" stroke-width="1.5" stroke-linecap="round"/>
+
+        <!-- Right rose cluster -->
+        <circle cx="170" cy="75" r="6" fill="#e8b890" opacity="0.5"/>
+        <circle cx="168" cy="73" r="4" fill="#d4985c" opacity="0.65"/>
+        <path d="M170 81 L170 90" stroke="#90b870" stroke-width="1.8" stroke-linecap="round"/>
+
+        <circle cx="161" cy="80" r="5" fill="#f0c8a0" opacity="0.45"/>
+        <circle cx="159" cy="78" r="3" fill="#d4a070" opacity="0.6"/>
+        <path d="M161 85 L161 90" stroke="#90b870" stroke-width="1.5" stroke-linecap="round"/>
+
+        <!-- Shimmer sparkles -->
+        <g class="shimmer">
+          <path d="M42 52 L43 55 L46 56 L43 57 L42 60 L41 57 L38 56 L41 55 Z" fill="#d4a060" opacity="0.55" transform="scale(0.65) translate(20, 18)"/>
+        </g>
+        <g class="shimmer" style="animation-delay:0.8s">
+          <path d="M178 38 L179 41 L182 42 L179 43 L178 46 L177 43 L174 42 L177 41 Z" fill="#c49a6c" opacity="0.5" transform="scale(0.6)"/>
+        </g>
+        <g class="shimmer" style="animation-delay:1.6s">
+          <path d="M60 35 L61 37 L63 38 L61 39 L60 41 L59 39 L57 38 L59 37 Z" fill="#e8c490" opacity="0.5" transform="scale(0.55)"/>
+        </g>
+      </svg>
+    </div>
+
+    <p class="eyebrow admin">Keluar Panel Admin</p>
+    <h2 class="title">Akhiri sesi<br><em>Administrator?</em></h2>
+    <p class="desc admin">Pastikan seluruh perubahan telah disimpan sebelum keluar. Sesi administrator akan berakhir sepenuhnya.</p>
+
+    <div class="session admin">
+      <div class="session-avatar admin">A</div>
+      <div>
+        <div class="session-name">Super Admin</div>
+        <div class="session-role admin">Administrator</div>
+      </div>
+    </div>
+
+    <div class="divider admin"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-ghost admin">Batalkan</button>
+      <button class="btn btn-confirm admin">Ya, Keluar</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
