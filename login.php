@@ -227,7 +227,7 @@ body::before {
       <!-- LOGIN -->
       <div class="form-panel" id="panelLogin">
         <p class="form-eyebrow">Selamat datang</p>
-        <h1 class="form-heading">Masuk ke<br><em>Akun Anda</em></h1>
+        <h1 class="form-heading">Masuk ke <br>Akun Anda</h1>
         <p class="form-sub">Senang bertemu lagi. Silakan masuk untuk melanjutkan.</p>
 
         <form method="POST" action="">
@@ -268,8 +268,7 @@ body::before {
 
       <!-- REGISTER -->
       <div class="form-panel" id="panelRegister">
-        <p class="form-eyebrow">Bergabung bersama kami</p>
-        <h1 class="form-heading">Buat <em>Akun</em><br>Baru</h1>
+        <h1 class="form-heading">Buat Akun Baru</h1>
         <p class="form-sub">Daftar gratis dan nikmati layanan laundry premium.</p>
 
         <form method="POST" action="">
