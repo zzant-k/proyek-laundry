@@ -317,13 +317,13 @@ session_start();
     <section id="review" class="reviews-v2">
         <div class="container">
             <div class="reviews-v2__header" data-animate="fade-up">
-                <h2 class="reviews-v2__title">Read reviews,<br>ride with confidence.</h2>
+                <h2 class="reviews-v2__title">Baca ulasan<br>Pilih laundry terpercaya.</h2>
                 <div class="reviews-v2__trustpilot">
                     <span class="reviews-v2__rating">4.2/5</span>
                     <div class="reviews-v2__tp-brand">
                         <i class="fas fa-star"></i>
                     </div>
-                    <span class="reviews-v2__count">Based on 999+ reviews</span>
+                    <span class="reviews-v2__count">Berdasarkan 99+ ulasan</span>
                 </div>
             </div>
 
@@ -332,7 +332,7 @@ session_start();
                     <div class="reviews-v2__quote-icon">
                         <i class="fas fa-quote-left"></i>
                     </div>
-                    <h3 class="reviews-v2__side-title">What our<br>customers are<br>saying</h3>
+                    <h3 class="reviews-v2__side-title">Apa yang<br> Mereka<br>Katakan.</h3>
                     
                     <div class="reviews-v2__nav">
                         <button class="reviews-v2__btn reviews-v2__btn--prev" aria-label="Previous">
@@ -575,7 +575,6 @@ session_start();
 
                 <!-- ═══ LEFT — Info Section ═══ -->
                 <div class="contact__info">
-                    <span class="contact__badge">WE'RE HERE TO HELP YOU</span>
                     <h2 class="contact__title">Diskusikan Kebutuhan <br><span class="text-gradient">Laundry Anda</span></h2>
                     <p class="contact__desc">Apakah Anda mencari layanan laundry berkualitas tinggi yang disesuaikan dengan kebutuhan Anda? Hubungi kami sekarang.</p>
 
@@ -655,12 +654,12 @@ session_start();
 
                     <form action="dashboard/proses_pesan.php" method="POST" class="cfc__form">
                         <div class="cfc__field">
-                            <label for="cf_nama">Name</label>
+                            <label for="cf_nama">Nama</label>
                             <input id="cf_nama" type="text" name="nama" placeholder="Jane Smith" required value="<?= htmlspecialchars($_SESSION['nama'] ?? '') ?>" />
                         </div>
 
                         <div class="cfc__field">
-                            <label for="cf_hp">Phone Number</label>
+                            <label for="cf_hp">Nomor handphone</label>
                             <input id="cf_hp" type="tel" name="no_hp" placeholder="08xxxxxxxxxx" required value="<?= htmlspecialchars($_SESSION['no_hp'] ?? '') ?>" />
                         </div>
 
