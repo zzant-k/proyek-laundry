@@ -37,7 +37,7 @@ $userNama = e($_SESSION['nama'] ?? 'Admin');
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
     <style>
       #logout-overlay {
         position: fixed;
@@ -319,79 +319,14 @@ $userNama = e($_SESSION['nama'] ?? 'Admin');
         </main>
     </div>
 
-    <script src="dashboard.js"></script>
+    <script src="../script/dashboard.js"></script>
 
     <!-- LOGOUT OVERLAY -->
     <div id="logout-overlay">
         <div class="card">
             <button class="close">×</button>
 
-            <div class="illus-area">
-                <svg class="illus-svg" width="220" height="110" viewBox="0 0 220 110" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <line x1="30" y1="90" x2="190" y2="90" stroke="#e8d0b0" stroke-width="1" stroke-linecap="round"/>
-                    <rect x="72" y="28" width="10" height="62" rx="3" fill="#f0e0c8" stroke="#d4b890" stroke-width="1.2"/>
-                    <rect x="138" y="28" width="10" height="62" rx="3" fill="#f0e0c8" stroke="#d4b890" stroke-width="1.2"/>
-                    <path d="M72 28 Q110 8 148 28" fill="none" stroke="#d4b890" stroke-width="1.5"/>
-                    <line x1="90"  y1="28" x2="90"  y2="90" stroke="#d4b890" stroke-width="1.2"/>
-                    <line x1="103" y1="24" x2="103" y2="90" stroke="#d4b890" stroke-width="1.2"/>
-                    <line x1="117" y1="24" x2="117" y2="90" stroke="#d4b890" stroke-width="1.2"/>
-                    <line x1="130" y1="28" x2="130" y2="90" stroke="#d4b890" stroke-width="1.2"/>
-                    <line x1="72" y1="52" x2="148" y2="52" stroke="#d4b890" stroke-width="1"/>
-                    <line x1="72" y1="70" x2="148" y2="70" stroke="#d4b890" stroke-width="1"/>
-                    <polygon points="90,22 93,28 87,28" fill="#c4a870"/>
-                    <polygon points="103,18 106,24 100,24" fill="#c4a870"/>
-                    <polygon points="117,18 120,24 114,24" fill="#c4a870"/>
-                    <polygon points="130,22 133,28 127,28" fill="#c4a870"/>
-                    <g transform="translate(95, 2)">
-                        <rect x="0" y="14" width="30" height="8" rx="2" fill="#d4a870"/>
-                        <polygon points="0,14 5,4 10,14" fill="#d4a870"/>
-                        <polygon points="10,14 15,0 20,14" fill="#c49060"/>
-                        <polygon points="20,14 25,4 30,14" fill="#d4a870"/>
-                        <circle cx="5"  cy="10" r="2" fill="#e8a0b8"/>
-                        <circle cx="15" cy="6"  r="2.5" fill="#c8485c"/>
-                        <circle cx="25" cy="10" r="2" fill="#e8a0b8"/>
-                        <circle cx="8"  cy="17" r="1.2" fill="#f0e0c0"/>
-                        <circle cx="15" cy="17" r="1.2" fill="#f0e0c0"/>
-                        <circle cx="22" cy="17" r="1.2" fill="#f0e0c0"/>
-                    </g>
-                    <rect x="103" y="56" width="14" height="11" rx="2.5" fill="#c49a6c" stroke="#b08850" stroke-width="1"/>
-                    <path d="M106 56 Q106 51 110 51 Q114 51 114 56" stroke="#b08850" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-                    <circle cx="110" cy="61" r="2" fill="#8b6030"/>
-                    <g transform="translate(150, 48)">
-                        <line x1="0" y1="0" x2="18" y2="18" stroke="#d4a060" stroke-width="2" stroke-linecap="round"/>
-                        <circle cx="0" cy="0" r="7" fill="none" stroke="#d4a060" stroke-width="2"/>
-                        <circle cx="0" cy="0" r="3" fill="none" stroke="#d4a060" stroke-width="1.5"/>
-                        <line x1="12" y1="12" x2="15" y2="9"  stroke="#d4a060" stroke-width="1.5" stroke-linecap="round"/>
-                        <line x1="15" y1="15" x2="18" y2="12" stroke="#d4a060" stroke-width="1.5" stroke-linecap="round"/>
-                    </g>
-                    <circle cx="50" cy="72" r="7" fill="#e8b890" opacity="0.55"/>
-                    <circle cx="48" cy="70" r="4.5" fill="#d4985c" opacity="0.7"/>
-                    <path d="M50 79 L50 90" stroke="#90b870" stroke-width="1.8" stroke-linecap="round"/>
-                    <path d="M50 85 L46 82" stroke="#90b870" stroke-width="1.2" stroke-linecap="round"/>
-                    <path d="M50 83 L54 80" stroke="#90b870" stroke-width="1.2" stroke-linecap="round"/>
-                    <circle cx="60" cy="80" r="5" fill="#f0c8a0" opacity="0.5"/>
-                    <circle cx="58" cy="78" r="3" fill="#d4a070" opacity="0.65"/>
-                    <path d="M60 85 L60 90" stroke="#90b870" stroke-width="1.5" stroke-linecap="round"/>
-                    <circle cx="170" cy="75" r="6" fill="#e8b890" opacity="0.5"/>
-                    <circle cx="168" cy="73" r="4" fill="#d4985c" opacity="0.65"/>
-                    <path d="M170 81 L170 90" stroke="#90b870" stroke-width="1.8" stroke-linecap="round"/>
-                    <circle cx="161" cy="80" r="5" fill="#f0c8a0" opacity="0.45"/>
-                    <circle cx="159" cy="78" r="3" fill="#d4a070" opacity="0.6"/>
-                    <path d="M161 85 L161 90" stroke="#90b870" stroke-width="1.5" stroke-linecap="round"/>
-                    <g class="shimmer">
-                        <path d="M42 52 L43 55 L46 56 L43 57 L42 60 L41 57 L38 56 L41 55 Z" fill="#d4a060" opacity="0.55" transform="scale(0.65) translate(20, 18)"/>
-                    </g>
-                    <g class="shimmer" style="animation-delay:0.8s">
-                        <path d="M178 38 L179 41 L182 42 L179 43 L178 46 L177 43 L174 42 L177 41 Z" fill="#c49a6c" opacity="0.5" transform="scale(0.6)"/>
-                    </g>
-                    <g class="shimmer" style="animation-delay:1.6s">
-                        <path d="M60 35 L61 37 L63 38 L61 39 L60 41 L59 39 L57 38 L59 37 Z" fill="#e8c490" opacity="0.5" transform="scale(0.55)"/>
-                    </g>
-                </svg>
-            </div>
-
-            <p class="eyebrow">Keluar Panel Admin</p>
-            <h2 class="title">Akhiri sesi<br><em>Administrator?</em></h2>
+            <h2 class="title">Akhiri sesi administrasi? </h2>
             <p class="desc">Pastikan seluruh perubahan telah disimpan sebelum keluar. Sesi administrator akan berakhir sepenuhnya.</p>
 
             <div class="session">

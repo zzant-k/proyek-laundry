@@ -16,7 +16,7 @@ session_start();
         rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-    <link rel="stylesheet" href="style.css?v=20260223" />
+    <link rel="stylesheet" href="css/style.css?v=<?= filemtime('css/style.css') ?>" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
       #logout-overlay {
@@ -785,7 +785,7 @@ session_start();
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="script.js"></script>
+    <script src="script/script.js?v=<?= filemtime('script/script.js') ?>"></script>
 
     <!-- ═══ LEAFLET MAP INIT ═══ -->
     <script>
@@ -867,60 +867,11 @@ session_start();
         <div class="card">
             <button class="close">×</button>
 
-            <div class="illus-area">
-                <svg class="illus-svg" width="220" height="110" viewBox="0 0 220 110" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <line x1="30" y1="90" x2="190" y2="90" stroke="#f0c8d8" stroke-width="1" stroke-linecap="round"/>
-                    <rect x="140" y="30" width="44" height="60" rx="3" fill="white" stroke="#e8a8c0" stroke-width="1.5"/>
-                    <rect x="146" y="38" width="14" height="18" rx="2" fill="none" stroke="#f0c0d4" stroke-width="1"/>
-                    <rect x="166" y="38" width="12" height="18" rx="2" fill="none" stroke="#f0c0d4" stroke-width="1"/>
-                    <rect x="146" y="62" width="32" height="20" rx="2" fill="none" stroke="#f0c0d4" stroke-width="1"/>
-                    <circle cx="158" cy="63" r="2.5" fill="#e8a0b8"/>
-                    <path d="M140 30 L128 36 L128 93 L140 90" fill="#fce8f0" stroke="#e8a8c0" stroke-width="1"/>
-                    <ellipse cx="115" cy="91" rx="9" ry="3" fill="#f5d5e5" opacity="0.7"/>
-                    <ellipse cx="96" cy="91" rx="7" ry="2.5" fill="#f5d5e5" opacity="0.5"/>
-                    <ellipse cx="78" cy="91" rx="6" ry="2.5" fill="#f5d5e5" opacity="0.4"/>
-                    <ellipse cx="112" cy="91" rx="10" ry="3" fill="#e8b0c8" opacity="0.25"/>
-                    <path d="M106 70 Q110 84 104 89 Q112 87 120 89 Q114 84 118 70 Z" fill="#e8a0b8"/>
-                    <rect x="107" y="57" width="10" height="16" rx="5" fill="#f2c0d0"/>
-                    <circle cx="112" cy="51" r="7" fill="#f5d0be"/>
-                    <path d="M105 49 Q112 40 119 49 Q117 44 112 43 Q107 44 105 49Z" fill="#8b4a6b"/>
-                    <path d="M105 49 Q103 55 106 58" stroke="#8b4a6b" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-                    <path d="M107 62 Q98 55 94 52" stroke="#f2c0d0" stroke-width="2.5" stroke-linecap="round" fill="none" class="rock"/>
-                    <circle cx="94" cy="51" r="3" fill="#f2c0d0"/>
-                    <path d="M117 62 Q120 67 119 71" stroke="#f2c0d0" stroke-width="2" stroke-linecap="round" fill="none"/>
-                    <path d="M109 88 Q107 91 106 90" stroke="#e890b0" stroke-width="2" stroke-linecap="round" fill="none"/>
-                    <path d="M115 88 Q116 91 117 90" stroke="#e890b0" stroke-width="2" stroke-linecap="round" fill="none"/>
-                    <g class="petal-anim" style="transform-origin: 75px 72px">
-                        <path d="M72 75 Q75 70 78 75 Q75 80 72 75Z" fill="#e8a0b8" opacity="0.8" transform="rotate(-20, 75, 75)"/>
-                    </g>
-                    <g class="petal-anim" style="transform-origin: 55px 68px">
-                        <path d="M52 71 Q55 66 58 71 Q55 76 52 71Z" fill="#f0b8cc" opacity="0.7" transform="rotate(10, 55, 71)"/>
-                    </g>
-                    <g class="petal-anim" style="transform-origin: 88px 60px">
-                        <path d="M85 63 Q88 58 91 63 Q88 68 85 63Z" fill="#d4889f" opacity="0.65" transform="rotate(-35, 88, 63)"/>
-                    </g>
-                    <circle cx="48" cy="78" r="5" fill="#e8a0b8" opacity="0.6"/>
-                    <circle cx="46" cy="76" r="3" fill="#d4789a" opacity="0.7"/>
-                    <path d="M48 83 L48 90" stroke="#b0d090" stroke-width="1.5" stroke-linecap="round"/>
-                    <path d="M48 87 L44 85" stroke="#b0d090" stroke-width="1" stroke-linecap="round"/>
-                    <circle cx="62" cy="82" r="4" fill="#f0b0c8" opacity="0.55"/>
-                    <circle cx="60" cy="80" r="2.5" fill="#e08090" opacity="0.65"/>
-                    <path d="M62 86 L62 90" stroke="#b0d090" stroke-width="1.5" stroke-linecap="round"/>
-                    <circle cx="175" cy="62" r="3.5" fill="#e8a0b8" opacity="0.5"/>
-                    <path d="M175 65 L175 72" stroke="#b0d090" stroke-width="1.5" stroke-linecap="round"/>
-                    <path d="M175 69 L178 67" stroke="#b0d090" stroke-width="1" stroke-linecap="round"/>
-                    <g class="shimmer">
-                        <path d="M68 50 L69 53 L72 54 L69 55 L68 58 L67 55 L64 54 L67 53 Z" fill="#e8a0b8" opacity="0.6" transform="scale(0.7) translate(28, 18)"/>
-                    </g>
-                    <g class="shimmer" style="animation-delay:1s">
-                        <path d="M155 42 L156 44 L158 45 L156 46 L155 48 L154 46 L152 45 L154 44 Z" fill="#d4889f" opacity="0.5" transform="scale(0.6)"/>
-                    </g>
-                </svg>
-            </div>
+            
 
-            <p class="eyebrow">Keluar Akun</p>
-            <h2 class="title">Kamu yakin ingin<br><em>meninggalkan kami?</em></h2>
-            <p class="desc">Semua aktivitasmu telah tersimpan dengan aman. Kamu bisa kembali kapan saja — kami selalu di sini untukmu.</p>
+            
+            <h2 class="title">Kamu yakin ingin keluar?</h2>
+            <p class="desc">Semua aktivitasmu telah tersimpan dengan aman. Kamu bisa kembali kapan saja.</p>
 
             <div class="session">
                 <div class="session-avatar"><?= strtoupper(substr($_SESSION['nama'] ?? 'S', 0, 1)) ?></div>
