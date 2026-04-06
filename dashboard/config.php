@@ -1,36 +1,27 @@
-<?php
+﻿<?php
 
 session_start();
 
-/*
- * ═══════════════════════════════════════════════════════
- *  1. KONEKSI DATABASE
- * ═══════════════════════════════════════════════════════
- */
-// Database credentials
+
 $db_host = 'localhost';
 $db_user = 'root';
 $db_pass = '';
 $db_name = 'proyek_laundry';
 
-// Create connection
 $conn = new mysqli($db_host, $db_user, $db_pass, $db_name);
 
-// Check connection
 if ($conn->connect_error) {
     die('<h3 style="color:#DC2626;font-family:Inter,sans-serif;">
          Koneksi database gagal: ' . $conn->connect_error . '</h3>');
 }
 
-// Set charset
 $conn->set_charset('utf8mb4');
 
 /*
- * ═══════════════════════════════════════════════════════
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  *  2. DATABASE MIGRATIONS (Auto-setup)
- * ═══════════════════════════════════════════════════════
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
-// ── Auto-migrate: tambah kolom baru jika belum ada (kompatibel semua MySQL) ──
 $_migrateDb = $conn->query("SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '$db_name' AND TABLE_NAME = 'transaksi' AND COLUMN_NAME = 'alamat'");
 if ($_migrateDb && $_migrateDb->fetch_row()[0] == 0) {
     $conn->query("ALTER TABLE transaksi ADD COLUMN alamat VARCHAR(255) NOT NULL DEFAULT ''");
@@ -39,34 +30,28 @@ $_migrateDb = $conn->query("SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHER
 if ($_migrateDb && $_migrateDb->fetch_row()[0] == 0) {
     $conn->query("ALTER TABLE transaksi ADD COLUMN whatsapp_sent TINYINT(1) NOT NULL DEFAULT 0");
 }
-// ── Perluas no_hp menjadi VARCHAR(50) & bersihkan NULL ──
 try {
     $conn->query("UPDATE transaksi SET no_hp = '' WHERE no_hp IS NULL");
     $conn->query("ALTER TABLE transaksi MODIFY COLUMN no_hp VARCHAR(50) NOT NULL DEFAULT ''");
 } catch (Exception $e) { /* abaikan jika sudah sesuai */ }
-// ── Auto-migrate: tambah kolom kode_order di pengiriman jika belum ada ──
 $_migratePengiriman = $conn->query("SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '$db_name' AND TABLE_NAME = 'pengiriman' AND COLUMN_NAME = 'kode_order'");
 if ($_migratePengiriman && $_migratePengiriman->fetch_row()[0] == 0) {
     $conn->query("ALTER TABLE pengiriman ADD COLUMN kode_order VARCHAR(20) DEFAULT NULL");
 }
-// ── Auto-migrate: tambah kolom no_hp di user jika belum ada ──
 $_migrateUser = $conn->query("SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '$db_name' AND TABLE_NAME = 'user' AND COLUMN_NAME = 'no_hp'");
 if ($_migrateUser && $_migrateUser->fetch_row()[0] == 0) {
     $conn->query("ALTER TABLE user ADD COLUMN no_hp VARCHAR(50) NOT NULL DEFAULT '' AFTER nama");
 }
-// ── Auto-migrate: tambah kolom latitude & longitude di transaksi ──
 $_migrateLat = $conn->query("SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '$db_name' AND TABLE_NAME = 'transaksi' AND COLUMN_NAME = 'latitude'");
 if ($_migrateLat && $_migrateLat->fetch_row()[0] == 0) {
     $conn->query("ALTER TABLE transaksi ADD COLUMN latitude DOUBLE DEFAULT NULL");
     $conn->query("ALTER TABLE transaksi ADD COLUMN longitude DOUBLE DEFAULT NULL");
 }
-// ── Auto-migrate: tambah kolom latitude & longitude di pengiriman ──
 $_migrateLatP = $conn->query("SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '$db_name' AND TABLE_NAME = 'pengiriman' AND COLUMN_NAME = 'latitude'");
 if ($_migrateLatP && $_migrateLatP->fetch_row()[0] == 0) {
     $conn->query("ALTER TABLE pengiriman ADD COLUMN latitude DOUBLE DEFAULT NULL");
     $conn->query("ALTER TABLE pengiriman ADD COLUMN longitude DOUBLE DEFAULT NULL");
 }
-// ── Auto-migrate: buat tabel profile jika belum ada ──
 $conn->query("CREATE TABLE IF NOT EXISTS `profile` (
   `id_profile` INT NOT NULL AUTO_INCREMENT,
   `id_user`    INT NOT NULL,
@@ -78,22 +63,18 @@ $conn->query("CREATE TABLE IF NOT EXISTS `profile` (
   KEY `fk_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
 
-// ── Auto-migrate: tambah kolom id_user di transaksi (link pesanan ke user) ──
 $_migrateIdUser = $conn->query("SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '$db_name' AND TABLE_NAME = 'transaksi' AND COLUMN_NAME = 'id_user'");
 if ($_migrateIdUser && $_migrateIdUser->fetch_row()[0] == 0) {
     $conn->query("ALTER TABLE transaksi ADD COLUMN id_user INT DEFAULT NULL AFTER id_laundry");
 }
 
-// ── Auto-migrate: update status ENUM untuk mendukung status baru ──
 try {
     $conn->query("ALTER TABLE transaksi MODIFY COLUMN status ENUM('Baru','Diproses','Dikirim','Selesai','Dibatalkan','Dicuci','Dijemput','Menunggu') DEFAULT 'Baru'");
-    // Normalisasi status lama ke status baru
     $conn->query("UPDATE transaksi SET status = 'Baru' WHERE status IN ('Menunggu')");
     $conn->query("UPDATE transaksi SET status = 'Diproses' WHERE status = 'Dicuci'");
     $conn->query("UPDATE transaksi SET status = 'Dikirim' WHERE status = 'Dijemput'");
 } catch (Exception $e) { /* abaikan jika sudah sesuai */ }
 
-// ── Auto-migrate: tambah kolom alamat di pengiriman jika belum ada ──
 $_migrateAlamatP = $conn->query("SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '$db_name' AND TABLE_NAME = 'pengiriman' AND COLUMN_NAME = 'alamat'");
 if ($_migrateAlamatP && $_migrateAlamatP->fetch_row()[0] == 0) {
     $conn->query("ALTER TABLE pengiriman ADD COLUMN alamat VARCHAR(255) NOT NULL DEFAULT ''");
@@ -101,9 +82,9 @@ if ($_migrateAlamatP && $_migrateAlamatP->fetch_row()[0] == 0) {
 
 
 /*
- * ═══════════════════════════════════════════════════════
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  *  3. CRUD HANDLERS (Create, Update, Delete)
- * ═══════════════════════════════════════════════════════
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
 /*CREATE / SIMPAN DATA*/
 if (isset($_POST['addDataBtn'])) {
@@ -181,7 +162,7 @@ if (isset($_POST['update'])) {
                      . "($jenis_layanan - $jenis_pencucian) telah *Selesai*. "
                      . "Silakan datang untuk mengambil pesanan Anda. "
                      . "Alamat: $alamatWA. "
-                     . "Terima kasih telah menggunakan Rumah Laundry! 🧺";
+                     . "Terima kasih telah menggunakan Rumah Laundry! ðŸ§º";
             $_SESSION['wa_notify'] = [
                 'nama' => $nama,
                 'url'  => 'https://wa.me/' . $noHp . '?text=' . rawurlencode($pesanWA),
@@ -191,11 +172,15 @@ if (isset($_POST['update'])) {
         }
         $_SESSION['flash'] = ['type' => 'success', 'message' => 'Transaksi berhasil diperbarui'];
     } else {
-        $_SESSION['flash'] = ['type' => 'danger', 'message' => 'Gagal memperbarui data'];
+        $_SESSION['flash'] = ['type' => 'danger', 'message' => 'Gagal memperbarui data. Silakan coba lagi.'];
     }
     $stmt->close();
 
-    header("Location: table-op.php");
+    if (in_array($status, ['Selesai', 'Dibatalkan'])) {
+        header("Location: riwayat_admin.php");
+    } else {
+        header("Location: table-op.php");
+    }
     exit;
 }
 
@@ -240,7 +225,6 @@ BULK DELETE DATA
 if (isset($_POST['bulkHapus']) && !empty($_POST['ids'])) {
     $ids = array_filter(array_map('intval', $_POST['ids']));
     if (!empty($ids)) {
-        // Ambil semua kode_order sebelum dihapus untuk cascade ke pengiriman
         $placeholders = implode(',', array_fill(0, count($ids), '?'));
         $types = str_repeat('i', count($ids));
         $stKode = $conn->prepare("SELECT kode_order FROM transaksi WHERE id_laundry IN ($placeholders)");
@@ -257,7 +241,6 @@ if (isset($_POST['bulkHapus']) && !empty($_POST['ids'])) {
         $stmt->bind_param($types, ...$ids);
         if ($stmt->execute()) {
             $deleted = $stmt->affected_rows;
-            // Cascade: hapus dari pengiriman berdasarkan kode_order
             if (!empty($kodeOrders)) {
                 $kph = implode(',', array_fill(0, count($kodeOrders), '?'));
                 $kpt = str_repeat('s', count($kodeOrders));
@@ -276,10 +259,47 @@ if (isset($_POST['bulkHapus']) && !empty($_POST['ids'])) {
     exit;
 }
 
+if (isset($_POST['bulkHapusRiwayat']) && !empty($_POST['ids'])) {
+    $ids = array_filter(array_map('intval', $_POST['ids']));
+    if (!empty($ids)) {
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $types = str_repeat('i', count($ids));
+        $stKode = $conn->prepare("SELECT kode_order FROM transaksi WHERE id_laundry IN ($placeholders)");
+        $stKode->bind_param($types, ...$ids);
+        $stKode->execute();
+        $resKode = $stKode->get_result();
+        $kodeOrders = [];
+        while ($rk = $resKode->fetch_assoc()) {
+            if (!empty($rk['kode_order'])) $kodeOrders[] = $rk['kode_order'];
+        }
+        $stKode->close();
+
+        $stmt = $conn->prepare("DELETE FROM transaksi WHERE id_laundry IN ($placeholders)");
+        $stmt->bind_param($types, ...$ids);
+        if ($stmt->execute()) {
+            $deleted = $stmt->affected_rows;
+            if (!empty($kodeOrders)) {
+                $kph = implode(',', array_fill(0, count($kodeOrders), '?'));
+                $kpt = str_repeat('s', count($kodeOrders));
+                $stDelP = $conn->prepare("DELETE FROM pengiriman WHERE kode_order IN ($kph)");
+                $stDelP->bind_param($kpt, ...$kodeOrders);
+                $stDelP->execute();
+                $stDelP->close();
+            }
+            $_SESSION['flash'] = ['type' => 'success', 'message' => "$deleted riwayat berhasil dihapus."];
+        } else {
+            $_SESSION['flash'] = ['type' => 'danger', 'message' => 'Gagal menghapus riwayat.'];
+        }
+        $stmt->close();
+    }
+    header("Location: riwayat_admin.php");
+    exit;
+}
+
 /*
- * ═══════════════════════════════════════════════════════
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  *  4. HELPER FUNCTIONS
- * ═══════════════════════════════════════════════════════
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
 /**
  * Check if user is logged in

@@ -1,0 +1,116 @@
+/* ── WhatsApp Banner (table-op) ── */
+@keyframes waBannerSlideIn {
+    from { opacity:0; transform:translateY(-16px) scale(.98); }
+    to   { opacity:1; transform:translateY(0)     scale(1);   }
+}
+@keyframes waPulse {
+    0%,100% { box-shadow:0 0 0 0 rgba(255,255,255,.4); }
+    50%     { box-shadow:0 0 0 8px rgba(255,255,255,0); }
+}
+@keyframes waShimmer {
+    0%   { background-position:-200% center; }
+    100% { background-position: 200% center; }
+}
+#waBanner {
+    animation: waBannerSlideIn .4s cubic-bezier(.22,.68,0,1.2) both;
+    position:relative;overflow:hidden;
+    background: linear-gradient(135deg,#1ebe5d 0%,#0fa451 40%,#0d8f47 100%);
+    border-radius:20px;padding:22px 28px;margin-bottom:24px;
+    display:flex;align-items:center;justify-content:space-between;
+    gap:18px;flex-wrap:wrap;
+    box-shadow:0 8px 32px rgba(14,150,70,.3), 0 2px 8px rgba(0,0,0,.08);
+}
+#waBanner::before {
+    content:'';position:absolute;inset:0;
+    background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.08) 50%,transparent 60%);
+    background-size:200% 100%;
+    animation:waShimmer 3.5s linear infinite;
+}
+#waBanner::after {
+    content:'';position:absolute;right:-60px;top:-60px;
+    width:200px;height:200px;border-radius:50%;
+    background:rgba(255,255,255,.06);pointer-events:none;
+}
+.wa-send-btn {
+    display:inline-flex;align-items:center;gap:10px;
+    background:#fff;color:#0a8a3e;font-weight:700;
+    padding:13px 24px;border-radius:12px;
+    text-decoration:none;font-size:.9rem;white-space:nowrap;
+    box-shadow:0 4px 16px rgba(0,0,0,.15);
+    transition:transform .2s,box-shadow .2s;
+    position:relative;z-index:1;
+}
+.wa-send-btn:hover {
+    transform:translateY(-2px);
+    box-shadow:0 6px 20px rgba(0,0,0,.2);
+}
+.wa-close-btn {
+    background:rgba(255,255,255,.15);backdrop-filter:blur(4px);
+    border:1.5px solid rgba(255,255,255,.3);color:#fff;
+    border-radius:10px;padding:10px 16px;cursor:pointer;
+    font-size:.82rem;font-weight:600;letter-spacing:.3px;
+    transition:background .2s,transform .15s;
+    display:inline-flex;align-items:center;gap:6px;
+    position:relative;z-index:1;
+}
+.wa-close-btn:hover {
+    background:rgba(255,255,255,.25);transform:scale(.97);
+}
+.wa-pulse-dot {
+    width:10px;height:10px;border-radius:50%;
+    background:#fff;animation:waPulse 1.8s ease-in-out infinite;
+    flex-shrink:0;
+}
+
+/* ── Checkbox column slide (table-op & riwayat_admin) ── */
+.cb-col {
+    max-width: 0;
+    overflow: hidden;
+    opacity: 0;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    white-space: nowrap;
+    transition: max-width .3s ease, opacity .3s ease, padding .3s ease;
+}
+#mainTable.select-mode .cb-col,
+#riwayatTable.select-mode .cb-col {
+    max-width: 50px;
+    opacity: 1;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+}
+
+/* ── Bulk toolbar fade+slide ── */
+#bulkToolbar {
+    transition: opacity .25s ease, transform .25s ease;
+    transform: translateY(-6px);
+    opacity: 0;
+}
+#bulkToolbar.visible {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* ── Pilih button ── */
+#toggleSelectBtn {
+    transition: background .2s, color .2s, border-color .2s;
+}
+#toggleSelectBtn.active {
+    background: #1F2937 !important;
+    color: #fff !important;
+    border-color: #1F2937 !important;
+}
+
+/* ── Badge styles (riwayat_admin etc) ── */
+.badge { display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:100px;font-size:.75rem;font-weight:600;white-space:nowrap; }
+.badge__dot { width:6px;height:6px;border-radius:50%;display:inline-block; }
+.badge--done { background:#d1fae5;color:#059669; }
+.badge--done .badge__dot { background:#059669; }
+.badge--cancelled { background:#fee2e2;color:#dc2626; }
+.badge--cancelled .badge__dot { background:#dc2626; }
+
+/* ── Modals General ── */
+@keyframes modalIn {
+    from { opacity:0; transform:scale(.94) translateY(10px); }
+    to   { opacity:1; transform:scale(1)  translateY(0);     }
+}

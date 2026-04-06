@@ -35,7 +35,7 @@
 </body>
 </html>
 <?php
-include "function.php";
+require_once 'dashboard/config.php';
 
 if(isset($_GET['kode']))
 

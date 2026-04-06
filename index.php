@@ -18,131 +18,7 @@ session_start();
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link rel="stylesheet" href="css/style.css?v=<?= filemtime('css/style.css') ?>" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <style>
-      #logout-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(45, 26, 36, 0.45);
-        backdrop-filter: blur(4px);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-        padding: 20px;
-        animation: fadeIn 0.25s ease;
-      }
-      @keyframes fadeIn {
-        from { opacity: 0; }
-        to   { opacity: 1; }
-      }
-      #logout-overlay .card {
-        width: 100%;
-        max-width: 480px;
-        background: #ffffff;
-        border-radius: 20px;
-        padding: 36px 40px 36px;
-        box-shadow: 0 4px 40px rgba(180, 100, 130, 0.1);
-        position: relative;
-        animation: rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
-      }
-      @keyframes rise {
-        from { opacity: 0; transform: translateY(16px); }
-        to   { opacity: 1; transform: translateY(0); }
-      }
-      #logout-overlay .card::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 40px; right: 40px;
-        height: 1.5px;
-        border-radius: 0 0 2px 2px;
-        background: linear-gradient(90deg, transparent, #e8a0b8, transparent);
-      }
-      #logout-overlay .illus-area {
-        width: 100%; height: 140px; border-radius: 14px;
-        display: flex; align-items: center; justify-content: center;
-        margin-bottom: 28px; background: #fdf5f8;
-        position: relative; overflow: hidden;
-      }
-      #logout-overlay .illus-area::before {
-        content: ''; position: absolute; inset: 0;
-        background-image: radial-gradient(circle, #e8c0cf 1px, transparent 1px);
-        background-size: 18px 18px; opacity: 0.35;
-      }
-      #logout-overlay .illus-svg { position: relative; z-index: 1; }
-      #logout-overlay .eyebrow {
-        font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase;
-        color: #d4889f; font-weight: 500; margin-bottom: 8px;
-        font-family: 'Jost', sans-serif;
-      }
-      #logout-overlay .title {
-        font-family: 'Cormorant Garamond', serif;
-        font-size: 25px; font-weight: 300; color: #2d1a24;
-        line-height: 1.3; margin-bottom: 10px;
-      }
-      #logout-overlay .desc {
-        font-family: 'Jost', sans-serif;
-        font-size: 13px; color: #9e7a88; line-height: 1.7;
-        font-weight: 300; margin-bottom: 26px;
-      }
-      #logout-overlay .session {
-        display: flex; align-items: center; gap: 10px;
-        padding: 11px 14px; background: #fdf8fa;
-        border-radius: 10px; margin-bottom: 24px;
-        border: 1px solid #f0e4eb;
-        font-family: 'Jost', sans-serif;
-      }
-      #logout-overlay .session-avatar {
-        width: 30px; height: 30px; border-radius: 50%;
-        background: linear-gradient(135deg, #f2a0b8, #d46880);
-        display: flex; align-items: center; justify-content: center;
-        font-size: 12px; color: #fff; font-weight: 500; flex-shrink: 0;
-      }
-      #logout-overlay .session-name { font-size: 13px; color: #5c3a48; font-weight: 400; }
-      #logout-overlay .session-role { font-size: 11px; color: #c0909e; margin-top: 1px; }
-      #logout-overlay .divider { height: 1px; background: #f2e8ed; margin-bottom: 24px; }
-      #logout-overlay .btn-row { display: flex; gap: 10px; }
-      #logout-overlay .btn-modal {
-        flex: 1; height: 44px; border-radius: 10px;
-        font-family: 'Jost', sans-serif; font-size: 13px; font-weight: 400;
-        letter-spacing: 0.5px; cursor: pointer; border: none;
-        transition: all 0.2s ease; display: flex; align-items: center; justify-content: center;
-      }
-      #logout-overlay .btn-ghost {
-        background: transparent; color: #b08898; border: 1px solid #ead8e2;
-      }
-      #logout-overlay .btn-ghost:hover { background: #fdf0f5; border-color: #d4a0b8; color: #8d6070; }
-      #logout-overlay .btn-confirm { background: #d4607c; color: #fff; letter-spacing: 0.8px; }
-      #logout-overlay .btn-confirm:hover { background: #c0546e; }
-      #logout-overlay .close {
-        position: absolute; top: 18px; right: 20px;
-        width: 28px; height: 28px;
-        display: flex; align-items: center; justify-content: center;
-        cursor: pointer; color: #cdb0bb; font-size: 18px;
-        border-radius: 50%; transition: all 0.2s;
-        border: none; background: none;
-      }
-      #logout-overlay .close:hover { color: #8d6070; background: #fdf0f5; }
-
-      @keyframes floatUp {
-        0%   { transform: translateY(0) rotate(0deg); opacity: 0.9; }
-        100% { transform: translateY(-55px) rotate(25deg); opacity: 0; }
-      }
-      #logout-overlay .petal-anim { animation: floatUp 2.8s ease-in-out infinite; }
-      #logout-overlay .petal-anim:nth-child(2) { animation-delay: 0.6s; }
-      #logout-overlay .petal-anim:nth-child(3) { animation-delay: 1.3s; }
-
-      @keyframes gentleRock {
-        0%, 100% { transform: rotate(-4deg); }
-        50%       { transform: rotate(4deg); }
-      }
-      #logout-overlay .rock { animation: gentleRock 4s ease-in-out infinite; transform-origin: center bottom; }
-
-      @keyframes shimmer {
-        0%, 100% { opacity: 0.6; }
-        50%       { opacity: 1; }
-      }
-      #logout-overlay .shimmer { animation: shimmer 2.5s ease-in-out infinite; }
-    </style>
+    <link rel="stylesheet" href="css/index-modal.css?v=<?= time() ?>" />
 </head>
 
 <body>
@@ -439,61 +315,7 @@ session_start();
 
     <!-- ═══════════════════ TRACKING ═══════════════════ -->
     <section id="lacak" class="tracking">
-
-        <!-- ── Floating decorative illustrations ── -->
-        <div class="tracking__deco" aria-hidden="true">
-
-            <!-- Washing machine — kiri atas -->
-            <svg class="tracking__deco-item tracking__deco--washer" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="4" y="4" width="72" height="72" rx="12" fill="#f3d0d8" fill-opacity="0.55"/>
-                <rect x="10" y="10" width="60" height="60" rx="8" stroke="#d8a7b1" stroke-width="2.5" fill="none"/>
-                <circle cx="40" cy="44" r="16" stroke="#d8a7b1" stroke-width="2.5" fill="white" fill-opacity="0.4"/>
-                <circle cx="40" cy="44" r="8" stroke="#c67a89" stroke-width="2" fill="none"/>
-                <circle cx="18" cy="20" r="3" fill="#c67a89" fill-opacity="0.7"/>
-                <circle cx="28" cy="20" r="3" fill="#d8a7b1" fill-opacity="0.7"/>
-                <rect x="50" y="16" width="14" height="8" rx="4" fill="#d8a7b1" fill-opacity="0.6"/>
-            </svg>
-
-            <!-- Shirt / baju — kanan atas -->
-            <svg class="tracking__deco-item tracking__deco--shirt" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M25 8 C25 8 20 5 14 10 L4 22 L16 26 L16 62 L54 62 L54 26 L66 22 L56 10 C50 5 45 8 45 8 C43 14 37 17 35 17 C33 17 27 14 25 8Z" fill="#f3d0d8" fill-opacity="0.55" stroke="#d8a7b1" stroke-width="2.5" stroke-linejoin="round"/>
-            </svg>
-
-            <!-- Glitter/sparkle besar — kanan tengah -->
-            <svg class="tracking__deco-item tracking__deco--sparkle1" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M20 2 L22.5 17.5 L38 20 L22.5 22.5 L20 38 L17.5 22.5 L2 20 L17.5 17.5 Z" fill="#d8a7b1" fill-opacity="0.55"/>
-            </svg>
-
-            <!-- Sparkle kecil — kiri bawah -->
-            <svg class="tracking__deco-item tracking__deco--sparkle2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 1 L13.5 10.5 L23 12 L13.5 13.5 L12 23 L10.5 13.5 L1 12 L10.5 10.5 Z" fill="#c67a89" fill-opacity="0.45"/>
-            </svg>
-
-            <!-- Hanger / gantungan baju — kiri tengah -->
-            <svg class="tracking__deco-item tracking__deco--hanger" viewBox="0 0 80 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M40 6 C40 6 46 6 46 12 C46 16 42 18 40 20 L10 40 C6 42 6 48 10 50 L70 50 C74 48 74 42 70 40 Z" stroke="#d8a7b1" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                <circle cx="40" cy="6" r="4" stroke="#d8a7b1" stroke-width="2.5" fill="white" fill-opacity="0.5"/>
-            </svg>
-
-            <!-- Bubble besar — kanan bawah -->
-            <svg class="tracking__deco-item tracking__deco--bubble1" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="30" cy="30" r="26" stroke="#d8a7b1" stroke-width="2.5" fill="#f3d0d8" fill-opacity="0.3"/>
-                <circle cx="20" cy="20" r="5" fill="white" fill-opacity="0.5"/>
-            </svg>
-
-            <!-- Bubble kecil — tengah kiri -->
-            <svg class="tracking__deco-item tracking__deco--bubble2" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="18" cy="18" r="15" stroke="#c67a89" stroke-width="2" fill="#f3d0d8" fill-opacity="0.25"/>
-            </svg>
-
-            <!-- Bubble mini — atas kanan -->
-            <svg class="tracking__deco-item tracking__deco--bubble3" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="12" cy="12" r="10" stroke="#d8a7b1" stroke-width="2" fill="#f3d0d8" fill-opacity="0.35"/>
-            </svg>
-        </div>
-
         <div class="container">
-
             <div class="section-header" data-animate="fade-up">
                 <span class="section-badge">Lacak Cucian</span>
                 <h2 class="section-title">Pantau <span class="text-gradient">Status Cucian</span> Anda</h2>
@@ -645,7 +467,6 @@ session_start();
                                 <i class="fas fa-user-plus"></i> Daftar
                             </a>
                         </div>
-                        <p class="cfc__prompt-note"><i class="fas fa-shield-alt"></i> Data Anda aman dan terlindungi</p>
                     </div>
                     </div>
                     <?php else: ?>
@@ -702,13 +523,30 @@ session_start();
                         <!-- ═══ MAP PICKER ═══ -->
                         <div class="cfc__field">
                             <label><i class="fas fa-map-marker-alt" style="color:var(--accent,#c67a89);margin-right:4px;"></i> Pilih Lokasi di Peta</label>
-                            <div id="map-picker-wrap" style="position:relative;border-radius:14px;overflow:hidden;border:2px solid #f0e4e7;box-shadow:0 2px 12px rgba(198,122,137,.08);">
-                                <div id="orderMap" style="width:100%;height:280px;z-index:1;"></div>
-                                <button type="button" id="btnGeolocate" style="position:absolute;top:12px;right:12px;z-index:999;background:#fff;border:2px solid #f0e4e7;border-radius:10px;padding:8px 14px;font-size:.82rem;font-weight:600;font-family:var(--font,'Inter',sans-serif);color:var(--accent,#c67a89);cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 2px 8px rgba(0,0,0,.08);transition:all .25s ease;" onmouseover="this.style.background='var(--accent,#c67a89)';this.style.color='#fff';this.style.borderColor='var(--accent,#c67a89)';" onmouseout="this.style.background='#fff';this.style.color='var(--accent,#c67a89)';this.style.borderColor='#f0e4e7';">
-                                    <i class="fas fa-crosshairs"></i> Lokasi Saya
-                                </button>
+
+                            <!-- Search Bar Alamat -->
+                            <div style="position:relative;margin-bottom:8px;">
+                                <div style="display:flex;gap:8px;">
+                                    <div style="position:relative;flex:1;">
+                                        <i class="fas fa-search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#c67a89;font-size:.82rem;pointer-events:none;"></i>
+                                        <input type="text" id="mapSearchInput" placeholder="Cari nama jalan, desa, kecamatan..." autocomplete="off"
+                                            style="width:100%;padding:10px 10px 10px 34px;border:2px solid #f0e4e7;border-radius:10px;font-size:.85rem;font-family:inherit;outline:none;box-sizing:border-box;transition:border-color .2s;"
+                                            onfocus="this.style.borderColor='#c67a89'" onblur="this.style.borderColor='#f0e4e7'" />
+                                        <div id="mapSearchSuggestions" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1.5px solid #f0e4e7;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,.1);z-index:1000;max-height:200px;overflow-y:auto;"></div>
+                                    </div>
+                                    <button type="button" id="btnGeolocate"
+                                        style="flex-shrink:0;background:#fff;border:2px solid #f0e4e7;border-radius:10px;padding:0 14px;font-size:.82rem;font-weight:600;font-family:inherit;color:#c67a89;cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 2px 8px rgba(0,0,0,.06);transition:all .25s ease;white-space:nowrap;"
+                                        onmouseover="this.style.background='#c67a89';this.style.color='#fff';this.style.borderColor='#c67a89';"
+                                        onmouseout="this.style.background='#fff';this.style.color='#c67a89';this.style.borderColor='#f0e4e7';">
+                                        <i class="fas fa-crosshairs"></i> GPS
+                                    </button>
+                                </div>
                             </div>
-                            <p style="font-size:.75rem;color:#9ca3af;margin-top:6px;"><i class="fas fa-info-circle"></i> Klik di peta atau geser pin untuk menentukan titik penjemputan.</p>
+
+                            <div id="map-picker-wrap" style="position:relative;border-radius:14px;overflow:hidden;border:2px solid #f0e4e7;box-shadow:0 2px 12px rgba(198,122,137,.08);">
+                                <div id="orderMap" style="width:100%;height:260px;z-index:1;"></div>
+                            </div>
+                            <p style="font-size:.75rem;color:#9ca3af;margin-top:6px;"><i class="fas fa-info-circle"></i> Cari alamat di atas, klik peta, atau geser pin untuk menentukan titik penjemputan.</p>
                             <input type="hidden" name="latitude" id="cf_lat" value="" />
                             <input type="hidden" name="longitude" id="cf_lng" value="" />
                         </div>
@@ -788,79 +626,7 @@ session_start();
     <script src="script/script.js?v=<?= filemtime('script/script.js') ?>"></script>
 
     <!-- ═══ LEAFLET MAP INIT ═══ -->
-    <script>
-    (function() {
-        var mapEl = document.getElementById('orderMap');
-        if (!mapEl) return;
-
-        // Default: Jakarta center
-        var defaultLat = -6.2088, defaultLng = 106.8456;
-        var map = L.map('orderMap', { scrollWheelZoom: false }).setView([defaultLat, defaultLng], 13);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap',
-            maxZoom: 19
-        }).addTo(map);
-
-        var marker = L.marker([defaultLat, defaultLng], { draggable: true }).addTo(map);
-
-        function updateCoords(lat, lng) {
-            document.getElementById('cf_lat').value = lat.toFixed(7);
-            document.getElementById('cf_lng').value = lng.toFixed(7);
-        }
-
-        function reverseGeocode(lat, lng) {
-            updateCoords(lat, lng);
-            fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lng + '&zoom=18&addressdetails=1', {
-                headers: { 'Accept-Language': 'id' }
-            })
-            .then(function(r) { return r.json(); })
-            .then(function(data) {
-                if (data && data.display_name) {
-                    document.getElementById('cf_alamat').value = data.display_name;
-                }
-            })
-            .catch(function() {});
-        }
-
-        // Click on map
-        map.on('click', function(e) {
-            marker.setLatLng(e.latlng);
-            reverseGeocode(e.latlng.lat, e.latlng.lng);
-        });
-
-        // Drag marker
-        marker.on('dragend', function() {
-            var pos = marker.getLatLng();
-            reverseGeocode(pos.lat, pos.lng);
-        });
-
-        // Geolocation button
-        document.getElementById('btnGeolocate').addEventListener('click', function() {
-            var btn = this;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mencari...';
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(pos) {
-                    var lat = pos.coords.latitude, lng = pos.coords.longitude;
-                    map.setView([lat, lng], 17);
-                    marker.setLatLng([lat, lng]);
-                    reverseGeocode(lat, lng);
-                    btn.innerHTML = '<i class="fas fa-crosshairs"></i> Lokasi Saya';
-                }, function() {
-                    alert('Gagal mendapatkan lokasi. Pastikan GPS aktif.');
-                    btn.innerHTML = '<i class="fas fa-crosshairs"></i> Lokasi Saya';
-                }, { enableHighAccuracy: true, timeout: 10000 });
-            } else {
-                alert('Browser tidak mendukung geolokasi.');
-                btn.innerHTML = '<i class="fas fa-crosshairs"></i> Lokasi Saya';
-            }
-        });
-
-        // Fix map sizing on scroll into view
-        var resizeObserver = new ResizeObserver(function() { map.invalidateSize(); });
-        resizeObserver.observe(mapEl);
-    })();
-    </script>
+    <script src="script/index-map.js?v=<?= time() ?>"></script>
 
     <!-- LOGOUT OVERLAY -->
     <div id="logout-overlay">
@@ -890,32 +656,7 @@ session_start();
         </div>
     </div>
 
-    <script>
-        // Buka popup ketika tombol logout diklik
-        document.querySelectorAll('.logout-btn').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                document.getElementById('logout-overlay').style.display = 'flex';
-            });
-        });
-
-        // Tutup popup: tombol batal & tombol ×
-        document.querySelectorAll('#logout-overlay .btn-ghost, #logout-overlay .close').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.getElementById('logout-overlay').style.display = 'none';
-            });
-        });
-
-        // Tutup popup: klik di luar card
-        document.getElementById('logout-overlay').addEventListener('click', function(e) {
-            if (e.target === this) this.style.display = 'none';
-        });
-
-        // Konfirmasi logout: tombol Ya, Keluar
-        document.querySelector('#logout-overlay .btn-confirm').addEventListener('click', function() {
-            window.location.href = 'logout.php';
-        });
-    </script>
+    <script src="script/logout-modal.js?v=<?= time() ?>"></script>
 </body>
 
 </html>

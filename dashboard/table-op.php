@@ -1,13 +1,12 @@
-<?php
+﻿<?php
 /**
- * ═══════════════════════════════════════════════════════
- *  RUMAH LAUNDRY — Table Operasional (CRUD via PHP)
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ *  RUMAH LAUNDRY â€” Table Operasional (CRUD via PHP)
  *  Semua CRUD ditangani oleh config.php lewat POST/GET
- * ═══════════════════════════════════════════════════════
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
 require_once 'config.php';
 
-// ── READ: Ambil data pesanan AKTIF saja (dengan filter status opsional) ──
 $filterStatus = $_GET['filter_status'] ?? '';
 if ($filterStatus !== '') {
     $stFilter = $conn->prepare("SELECT * FROM transaksi WHERE status = ? ORDER BY id_laundry DESC");
@@ -15,7 +14,6 @@ if ($filterStatus !== '') {
     $stFilter->execute();
     $result = $stFilter->get_result();
 } else {
-    // Default: hanya tampilkan pesanan aktif (exclude Selesai & Dibatalkan)
     $result = $conn->query("SELECT * FROM transaksi WHERE status IN ('Baru','Diproses','Dikirim') ORDER BY id_laundry DESC");
 }
 $userNama = e($_SESSION['nama'] ?? 'Admin');
@@ -25,16 +23,17 @@ $userNama = e($_SESSION['nama'] ?? 'Admin');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Operasional — Rumah Laundry</title>
+    <title>Data Operasional â€” Rumah Laundry</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/dashboard-modals.css?v=<?= time() ?>">
 </head>
 <body>
 
-    <!-- ═══════════ SIDEBAR ═══════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â•â• SIDEBAR â•â•â•â•â•â•â•â•â•â•â• -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar__header">
             <div class="sidebar__logo">
@@ -48,20 +47,20 @@ $userNama = e($_SESSION['nama'] ?? 'Admin');
             <ul class="sidebar__menu">
                 <li><a href="dashboard.php" class="sidebar__link"><i class="fas fa-th-large"></i><span>Dashboard</span></a></li>
                 <li><a href="table-op.php" class="sidebar__link active"><i class="fas fa-receipt"></i><span>Transaksi</span></a></li>
-                <!-- <li><a href="riwayat_admin.php" class="sidebar__link"><i class="fas fa-clock-rotate-left"></i><span>Riwayat Transaksi</span></a></li>
-                <li><a href="pesan.php" class="sidebar__link"><i class="fas fa-envelope"></i><span>Pesan Masuk</span></a></li> -->
+                <li><a href="riwayat_admin.php" class="sidebar__link"><i class="fas fa-clock-rotate-left"></i><span>Riwayat Transaksi</span></a></li>
+                <li><a href="pesan.php" class="sidebar__link"><i class="fas fa-envelope"></i><span>Pesan Masuk</span></a></li>
             </ul>
-            <!-- <span class="sidebar__label">LAINNYA</span> -->
+            <span class="sidebar__label">LAINNYA</span>
             <ul class="sidebar__menu">
-                <!-- <li><a href="../index.php" class="sidebar__link"><i class="fas fa-globe"></i><span>Lihat Website</span></a></li>
-                <li><a href="logout.php" class="sidebar__link sidebar__link--logout logout-btn"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li> -->
+                <li><a href="../index.php" class="sidebar__link"><i class="fas fa-globe"></i><span>Lihat Website</span></a></li>
+                <li><a href="logout.php" class="sidebar__link sidebar__link--logout logout-btn"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
             </ul>
         </nav>
     </aside>
 
     <div class="overlay" id="overlay"></div>
 
-    <!-- ═══════════ MAIN ═══════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â•â• MAIN â•â•â•â•â•â•â•â•â•â•â• -->
     <div class="main-wrapper" id="mainWrapper">
         <header class="topbar" id="topbar">
             <div class="topbar__left">
@@ -90,7 +89,6 @@ $userNama = e($_SESSION['nama'] ?? 'Admin');
         <main class="content">
 
             <?php
-            // ── Flash Message ──
             $flash = getFlash();
             if ($flash): ?>
             <div class="alert alert-<?= $flash['type'] == 'success' ? 'success' : 'danger' ?>"
@@ -100,74 +98,10 @@ $userNama = e($_SESSION['nama'] ?? 'Admin');
             <?php endif; ?>
 
             <?php
-            // ── WhatsApp Notifikasi Banner ──
             $waNotify = $_SESSION['wa_notify'] ?? null;
             unset($_SESSION['wa_notify']);
             if ($waNotify): ?>
-            <style>
-                @keyframes waBannerSlideIn {
-                    from { opacity:0; transform:translateY(-16px) scale(.98); }
-                    to   { opacity:1; transform:translateY(0)     scale(1);   }
-                }
-                @keyframes waPulse {
-                    0%,100% { box-shadow:0 0 0 0 rgba(255,255,255,.4); }
-                    50%     { box-shadow:0 0 0 8px rgba(255,255,255,0); }
-                }
-                @keyframes waShimmer {
-                    0%   { background-position:-200% center; }
-                    100% { background-position: 200% center; }
-                }
-                #waBanner {
-                    animation: waBannerSlideIn .4s cubic-bezier(.22,.68,0,1.2) both;
-                    position:relative;overflow:hidden;
-                    background: linear-gradient(135deg,#1ebe5d 0%,#0fa451 40%,#0d8f47 100%);
-                    border-radius:20px;padding:22px 28px;margin-bottom:24px;
-                    display:flex;align-items:center;justify-content:space-between;
-                    gap:18px;flex-wrap:wrap;
-                    box-shadow:0 8px 32px rgba(14,150,70,.3), 0 2px 8px rgba(0,0,0,.08);
-                }
-                #waBanner::before {
-                    content:'';position:absolute;inset:0;
-                    background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.08) 50%,transparent 60%);
-                    background-size:200% 100%;
-                    animation:waShimmer 3.5s linear infinite;
-                }
-                #waBanner::after {
-                    content:'';position:absolute;right:-60px;top:-60px;
-                    width:200px;height:200px;border-radius:50%;
-                    background:rgba(255,255,255,.06);pointer-events:none;
-                }
-                .wa-send-btn {
-                    display:inline-flex;align-items:center;gap:10px;
-                    background:#fff;color:#0a8a3e;font-weight:700;
-                    padding:13px 24px;border-radius:12px;
-                    text-decoration:none;font-size:.9rem;white-space:nowrap;
-                    box-shadow:0 4px 16px rgba(0,0,0,.15);
-                    transition:transform .2s,box-shadow .2s;
-                    position:relative;z-index:1;
-                }
-                .wa-send-btn:hover {
-                    transform:translateY(-2px);
-                    box-shadow:0 6px 20px rgba(0,0,0,.2);
-                }
-                .wa-close-btn {
-                    background:rgba(255,255,255,.15);backdrop-filter:blur(4px);
-                    border:1.5px solid rgba(255,255,255,.3);color:#fff;
-                    border-radius:10px;padding:10px 16px;cursor:pointer;
-                    font-size:.82rem;font-weight:600;letter-spacing:.3px;
-                    transition:background .2s,transform .15s;
-                    display:inline-flex;align-items:center;gap:6px;
-                    position:relative;z-index:1;
-                }
-                .wa-close-btn:hover {
-                    background:rgba(255,255,255,.25);transform:scale(.97);
-                }
-                .wa-pulse-dot {
-                    width:10px;height:10px;border-radius:50%;
-                    background:#fff;animation:waPulse 1.8s ease-in-out infinite;
-                    flex-shrink:0;
-                }
-            </style>
+            <!-- WhatsApp Notifikasi Banner CSS moved to external file -->
             <div id="waBanner">
                 <!-- Left: icon + text -->
                 <div style="display:flex;align-items:center;gap:16px;position:relative;z-index:1;">
@@ -217,7 +151,7 @@ $userNama = e($_SESSION['nama'] ?? 'Admin');
             </script>
             <?php endif; ?>
 
-            <!-- ══════════ MODAL OVERLAY ══════════ -->
+            <!-- â•â•â•â•â•â•â•â•â•â• MODAL OVERLAY â•â•â•â•â•â•â•â•â•â• -->
             <!-- MODAL TAMBAH -->
             <div id="modalTambah" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
                 <div style="background:#fff;border-radius:20px;padding:32px 36px;width:100%;max-width:640px;box-shadow:0 24px 60px rgba(0,0,0,.18);position:relative;max-height:90vh;overflow-y:auto;animation:modalIn .28s cubic-bezier(.22,.68,0,1.2) both;">
@@ -274,7 +208,7 @@ $userNama = e($_SESSION['nama'] ?? 'Admin');
                                 onfocus="this.style.borderColor='#D8A7B1'" onblur="this.style.borderColor='#f0e4e7'">
                         </div>
                         <div style="grid-column:1/-1;display:flex;gap:12px;margin-top:4px;">
-                            <button type="submit" name="addDataBtn" class="btn btn--primary" style="flex:1;padding:14px;justify-content:center;">
+                            <button type="submit" name="addDataBtn" class="btn btn--primary" style="flex:1;padding:14px;justify-content:center; background: #1F2937;">
                                 <i class="fas fa-plus"></i> Tambah Data
                             </button>
                             <button type="button" onclick="closeModal('modalTambah')" class="btn btn--outline" style="padding:14px 20px;">Batal</button>
@@ -285,9 +219,9 @@ $userNama = e($_SESSION['nama'] ?? 'Admin');
 
             <!-- MODAL EDIT -->
             <div id="modalEdit" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
-                <div style="background:#fff;border-radius:20px;padding:32px 36px;width:100%;max-width:640px;box-shadow:0 24px 60px rgba(0,0,0,.18);position:relative;max-height:90vh;overflow-y:auto;animation:modalIn .28s cubic-bezier(.22,.68,0,1.2) both;">
+                <div style="background:#fff;border-radius:20px;padding:32px 36px;width:100%;max-width:600px;box-shadow:0 24px 60px rgba(0,0,0,.18);position:relative;max-height:100vh;overflow-y:auto;animation:modalIn .28s cubic-bezier(.22,.68,0,1.2) both;">
                     <button onclick="closeModal('modalEdit')" style="position:absolute;top:16px;right:18px;background:none;border:none;font-size:1.3rem;cursor:pointer;color:#9ca3af;line-height:1;">&times;</button>
-                    <h2 style="margin:0 0 4px;color:#D97706;font-size:1.15rem;"><i class="fas fa-edit"></i> Edit Transaksi <span id="editKode"></span></h2>
+                    <h2 style="margin:0 0 4px;color:#b8161b;font-size:1.15rem;"><i class="fas fa-edit"></i> Edit Transaksi <span id="editKode"></span></h2>
                     <p style="margin:0 0 22px;font-size:.85rem;color:#9ca3af;">Ubah data transaksi di bawah ini</p>
                     <form method="POST" action="config.php" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
                         <input type="hidden" id="eId" name="id_laundry">
@@ -295,13 +229,13 @@ $userNama = e($_SESSION['nama'] ?? 'Admin');
                         <div class="form-group">
                             <label for="eNama" style="display:block;font-size:.85rem;font-weight:600;margin-bottom:6px;">Nama Pelanggan</label>
                             <input type="text" id="eNama" name="nama" placeholder="Masukkan nama" required
-                                style="width:100%;padding:12px 14px;border:2px solid #f0e4e7;border-radius:10px;font-family:'Inter',sans-serif;font-size:.95rem;outline:none;box-sizing:border-box;"
+                                style="width:100%;padding:12px 14px;border:2px solid #f0e4e7;border-radius:10px;font-family:'Inter',sans-serif;font-size:.95rem;outline:none;background:#fff;box-sizing:border-box;"
                                 onfocus="this.style.borderColor='#D8A7B1'" onblur="this.style.borderColor='#f0e4e7'">
                         </div>
                         <div class="form-group">
                             <label for="eHP" style="display:block;font-size:.85rem;font-weight:600;margin-bottom:6px;">No HP</label>
                             <input type="text" id="eHP" name="no_hp" placeholder="08xxxxxxxxxx" required
-                                style="width:100%;padding:12px 14px;border:2px solid #f0e4e7;border-radius:10px;font-family:'Inter',sans-serif;font-size:.95rem;outline:none;box-sizing:border-box;"
+                                style="width:100%;padding:12px 14px;border:2px solid #f0e4e7;border-radius:10px;font-family:'Inter',sans-serif;font-size:.95rem;outline:none;background:#fff;box-sizing:border-box;"
                                 onfocus="this.style.borderColor='#D8A7B1'" onblur="this.style.borderColor='#f0e4e7'">
                         </div>
                         <div class="form-group">
@@ -326,17 +260,17 @@ $userNama = e($_SESSION['nama'] ?? 'Admin');
                         <div class="form-group">
                             <label for="eTanggal" style="display:block;font-size:.85rem;font-weight:600;margin-bottom:6px;">Tanggal Penjemputan</label>
                             <input type="date" id="eTanggal" name="tanggal_penjemputan" required
-                                style="width:100%;padding:12px 14px;border:2px solid #f0e4e7;border-radius:10px;font-family:'Inter',sans-serif;font-size:.95rem;outline:none;box-sizing:border-box;">
+                                style="width:100%;padding:12px 14px;border:2px solid #f0e4e7;border-radius:10px;font-family:'Inter',sans-serif;font-size:.95rem;outline:none;background:#fff;box-sizing:border-box;">
                         </div>
                         <div class="form-group">
                             <label for="eJam" style="display:block;font-size:.85rem;font-weight:600;margin-bottom:6px;">Jam Penjemputan</label>
                             <input type="time" id="eJam" name="jam_penjemputan" required
-                                style="width:100%;padding:12px 14px;border:2px solid #f0e4e7;border-radius:10px;font-family:'Inter',sans-serif;font-size:.95rem;outline:none;box-sizing:border-box;">
+                                style="width:100%;padding:12px 14px;border:2px solid #f0e4e7;border-radius:10px;font-family:'Inter',sans-serif;font-size:.95rem;outline:none;background:#fff;box-sizing:border-box;">
                         </div>
                         <div class="form-group" style="grid-column:1/-1;">
                             <label for="eAlamat" style="display:block;font-size:.85rem;font-weight:600;margin-bottom:6px;">Alamat Pelanggan</label>
                             <input type="text" id="eAlamat" name="alamat" placeholder="Masukkan alamat lengkap"
-                                style="width:100%;padding:12px 14px;border:2px solid #f0e4e7;border-radius:10px;font-family:'Inter',sans-serif;font-size:.95rem;outline:none;box-sizing:border-box;"
+                                style="width:100%;padding:12px 14px;border:2px solid #f0e4e7;border-radius:10px;font-family:'Inter',sans-serif;font-size:.95rem;outline:none;background:#fff;box-sizing:border-box;"
                                 onfocus="this.style.borderColor='#D8A7B1'" onblur="this.style.borderColor='#f0e4e7'">
                         </div>
                         <div class="form-group" style="grid-column:1/-1;">
@@ -351,7 +285,7 @@ $userNama = e($_SESSION['nama'] ?? 'Admin');
                             </select>
                         </div>
                         <div style="grid-column:1/-1;display:flex;gap:12px;margin-top:4px;">
-                            <button type="submit" name="update" class="btn btn--primary" style="flex:1;padding:14px;justify-content:center;">
+                            <button type="submit" name="update" class="btn btn--primary" style="flex:1;padding:14px;background-color:#b8161b;justify-content:center;">
                                 <i class="fas fa-save"></i> Simpan Perubahan
                             </button>
                             <button type="button" onclick="closeModal('modalEdit')" class="btn btn--outline" style="padding:14px 20px;">Batal</button>
@@ -361,7 +295,7 @@ $userNama = e($_SESSION['nama'] ?? 'Admin');
             </div>
 
 
-            <!-- ══════════ DATA TABLE ══════════ -->
+            <!-- â•â•â•â•â•â•â•â•â•â• DATA TABLE â•â•â•â•â•â•â•â•â•â• -->
             <div class="table-section" data-animate="fade-up">
                 <div class="table-section__header">
                     <div>
@@ -412,59 +346,32 @@ $userNama = e($_SESSION['nama'] ?? 'Admin');
                         </button>
                     </div>
                 </div>
-                <style>
-                    /* Checkbox column — smooth slide in/out */
-                    .cb-col {
-                        max-width: 0;
-                        overflow: hidden;
-                        opacity: 0;
-                        padding-left: 0 !important;
-                        padding-right: 0 !important;
-                        white-space: nowrap;
-                        transition: max-width .3s ease, opacity .3s ease, padding .3s ease;
-                    }
-                    #mainTable.select-mode .cb-col {
-                        max-width: 50px;
-                        opacity: 1;
-                        padding-left: 12px !important;
-                        padding-right: 12px !important;
-                    }
-                    /* Bulk toolbar fade+slide */
-                    #bulkToolbar {
-                        transition: opacity .25s ease, transform .25s ease;
-                        transform: translateY(-6px);
-                        opacity: 0;
-                    }
-                    #bulkToolbar.visible {
-                        transform: translateY(0);
-                        opacity: 1;
-                    }
-                    /* Pilih button */
-                    #toggleSelectBtn {
-                        transition: background .2s, color .2s, border-color .2s;
-                    }
-                    #toggleSelectBtn.active {
-                        background: #C67A89 !important;
-                        color: #fff !important;
-                        border-color: #C67A89 !important;
-                    }
-                </style>
-                <div id="bulkToolbar" style="display:none;background:linear-gradient(135deg,#C67A89,#D8A7B1);
-                    border-radius:12px;padding:14px 20px;margin:12px 0;color:#fff;
-                    display:none;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
-                    <span><i class="fas fa-check-square"></i> <strong id="selectedCount">0</strong> data dipilih</span>
+                <!-- Checkbox CSS moved to external file -->
+                <div id="bulkToolbar" style="
+                    display: none;
+                    background: #121924ff;
+                    padding: 10px 20px;
+                    color: #fff;
+
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 12px;
+
+                    width: 100%;
+                    max-width: 100%;">
+                    <span><strong id="selectedCount">0</strong> data dipilih</span>
                     <div style="display:flex;gap:8px;">
                         <form method="POST" action="config.php" id="bulkForm">
                             <input type="hidden" name="bulkHapus" value="1">
                             <div id="bulkInputs"></div>
                             <button type="button" onclick="confirmBulkDelete()"
-                                style="background:#fff;color:#C67A89;border:none;padding:8px 16px;
+                                style="background:#fff;color:#0a0a0a;border:none;padding:8px 16px;
                                        border-radius:8px;font-weight:700;cursor:pointer;font-size:.85rem;">
-                                <i class="fas fa-trash-alt"></i> Hapus Terpilih
+                                <i class="fas fa-trash-alt"></i> Hapus
                             </button>
                         </form>
                         <button onclick="clearSelection()"
-                            style="background:rgba(255,255,255,.2);color:#fff;border:none;padding:8px 14px;
+                            style="background:rgba(255, 255, 255, 0.2);color:#fff;border:none;padding:8px 14px;
                                    border-radius:8px;cursor:pointer;font-size:.85rem;">
                             Batal
                         </button>
@@ -474,21 +381,21 @@ $userNama = e($_SESSION['nama'] ?? 'Admin');
                 <div class="table-wrapper">
                     <table class="data-table" id="mainTable">
                         <thead>
-                            <tr>
-                                <th class="cb-col" style="width:40px;text-align:center;">
+                            <tr style="background-color: #1F2937; color: #ffffff !important;">
+                                <th class="cb-col" style="width:35px;text-align:center;">
                                     <input type="checkbox" id="selectAll" title="Pilih Semua"
-                                        style="width:16px;height:16px;cursor:pointer;accent-color:#C67A89;">
+                                        style="width:16px;height:16px;cursor:pointer;accent-color:#1F2937;border:2px solid #000000ff;">
                                 </th>
-                                <th>No</th>
-                                <th>Kode Order</th>
-                                <th>Nama</th>
-                                <th>No HP</th>
-                                <th>Jenis Pencucian</th>
-                                <th>Jenis Layanan</th>
-                                <th>Tgl Jemput</th>
-                                <th>Jam</th>
-                                <th>Status</th>
-                                <th>Aksi</th>
+                                <th style="background-color: #1F2937; color: #ffffff !important;">No</th>
+                                <th style="background-color: #1F2937; color: #ffffff !important;">Kode Order</th>
+                                <th style="background-color: #1F2937; color: #ffffff !important;">Nama</th>
+                                <th style="background-color: #1F2937; color: #ffffff !important;">No HP</th>
+                                <th style="background-color: #1F2937; color: #ffffff !important;">Jenis Pencucian</th>
+                                <th style="background-color: #1F2937; color: #ffffff !important;">Jenis Layanan</th>
+                                <th style="background-color: #1F2937; color: #ffffff !important;">Tgl Jemput</th>
+                                <th style="background-color: #1F2937; color: #ffffff !important;">Jam</th>
+                                <th style="background-color: #1F2937; color: #ffffff !important;">Status</th>
+                                <th style="background-color: #1F2937; color: #ffffff !important;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -497,7 +404,7 @@ $userNama = e($_SESSION['nama'] ?? 'Admin');
                                     <tr class="data-row" data-id="<?= $row['id_laundry'] ?>">
                                         <td class="cb-col" style="text-align:center;">
                                             <input type="checkbox" class="row-cb" value="<?= $row['id_laundry'] ?>"
-                                                style="width:16px;height:16px;cursor:pointer;accent-color:#C67A89;">
+                                                style="width:16px;height:16px;cursor:pointer;accent-color:#1F2937;">
                                         </td>
                                         <td><?= $no++ ?></td>
                                         <td>
@@ -567,155 +474,7 @@ $userNama = e($_SESSION['nama'] ?? 'Admin');
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
 
-    <style>
-        @keyframes modalIn {
-            from { opacity:0; transform:scale(.94) translateY(10px); }
-            to   { opacity:1; transform:scale(1)  translateY(0);     }
-        }
-    </style>
-    <script>
-        /* ══ Modal Helpers ══ */
-        window.openModal = function(id) {
-            var m = document.getElementById(id);
-            m.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        };
-        window.closeModal = function(id) {
-            var m = document.getElementById(id);
-            m.style.display = 'none';
-            document.body.style.overflow = '';
-        };
-        // Close modal when clicking backdrop
-        ['modalTambah','modalEdit'].forEach(function(id){
-            document.getElementById(id).addEventListener('click', function(e){
-                if(e.target === this) closeModal(id);
-            });
-        });
-
-        window.openEditModal = function(id, kode, nama, hp, pencucian, layanan, tanggal, jam, alamat, status) {
-            document.getElementById('eId').value        = id;
-            document.getElementById('editKode').textContent = '#' + kode;
-            document.getElementById('eNama').value     = nama;
-            document.getElementById('eHP').value       = hp;
-            document.getElementById('eTanggal').value  = tanggal;
-            document.getElementById('eJam').value      = jam;
-            document.getElementById('eAlamat').value   = alamat;
-            // selects
-            setSelect('ePencucian', pencucian);
-            setSelect('eLayanan',   layanan);
-            setSelect('eStatus',    status);
-            openModal('modalEdit');
-        };
-        function setSelect(id, val) {
-            var s = document.getElementById(id);
-            for(var i=0;i<s.options.length;i++){
-                if(s.options[i].value === val){ s.selectedIndex=i; break; }
-            }
-        }
-
-        /* UI Interaktif saja — sidebar toggle, overlay, animations */
-        document.addEventListener('DOMContentLoaded', () => {
-            const sidebar = document.getElementById('sidebar');
-            const sidebarToggle = document.getElementById('sidebarToggle');
-            const sidebarClose = document.getElementById('sidebarClose');
-            const overlay = document.getElementById('overlay');
-            const isMobile = () => window.innerWidth <= 768;
-
-            sidebarToggle.addEventListener('click', () => {
-                if (isMobile()) {
-                    sidebar.classList.toggle('mobile-open');
-                    overlay.classList.toggle('show');
-                } else {
-                    sidebar.classList.toggle('collapsed');
-                }
-            });
-            sidebarClose.addEventListener('click', () => {
-                sidebar.classList.remove('mobile-open');
-                overlay.classList.remove('show');
-            });
-            overlay.addEventListener('click', () => {
-                sidebar.classList.remove('mobile-open');
-                overlay.classList.remove('show');
-            });
-
-            /* Scroll animations */
-            document.querySelectorAll('[data-animate]').forEach((el, i) => {
-                setTimeout(() => el.classList.add('animated'), (parseInt(el.dataset.delay || 0)) + (i * 80));
-            });
-
-            /* Profile dropdown */
-            const profileToggle = document.getElementById('profileToggle');
-            profileToggle.addEventListener('click', e => {
-                e.stopPropagation();
-                profileToggle.classList.toggle('open');
-            });
-            document.addEventListener('click', () => profileToggle.classList.remove('open'));
-
-            /* ── Multi-select logic ── */
-            const selectAll  = document.getElementById('selectAll');
-            const toolbar    = document.getElementById('bulkToolbar');
-            const countEl    = document.getElementById('selectedCount');
-
-            function getChecked() {
-                return [...document.querySelectorAll('.row-cb:checked')];
-            }
-
-            function updateToolbar() {
-                const checked = getChecked();
-                if (checked.length > 0) {
-                    toolbar.style.display = 'flex';
-                    requestAnimationFrame(() => toolbar.classList.add('visible'));
-                    countEl.textContent = checked.length;
-                } else {
-                    toolbar.classList.remove('visible');
-                    setTimeout(() => toolbar.style.display = 'none', 260);
-                }
-                selectAll.indeterminate = checked.length > 0 && checked.length < document.querySelectorAll('.row-cb').length;
-                selectAll.checked = checked.length === document.querySelectorAll('.row-cb').length && checked.length > 0;
-            }
-
-            selectAll.addEventListener('change', () => {
-                document.querySelectorAll('.row-cb').forEach(cb => cb.checked = selectAll.checked);
-                updateToolbar();
-            });
-
-            document.querySelectorAll('.row-cb').forEach(cb => {
-                cb.addEventListener('change', updateToolbar);
-            });
-        });
-
-        window.toggleSelectMode = function() {
-            const table = document.getElementById('mainTable');
-            const btn   = document.getElementById('toggleSelectBtn');
-            const isOn  = table.classList.toggle('select-mode');
-            btn.classList.toggle('active', isOn);
-            btn.innerHTML = isOn
-                ? '<i class="fas fa-times"></i> Batal Pilih'
-                : '<i class="fas fa-check-square"></i> Pilih';
-            if (!isOn) clearSelection();
-        };
-
-        window.clearSelection = function() {
-            document.querySelectorAll('.row-cb').forEach(cb => cb.checked = false);
-            document.getElementById('selectAll').checked = false;
-            document.getElementById('bulkToolbar').style.display = 'none';
-        };
-
-        window.confirmBulkDelete = function() {
-            const checked = [...document.querySelectorAll('.row-cb:checked')];
-            if (checked.length === 0) return;
-            if (!confirm(`Yakin ingin menghapus ${checked.length} data yang dipilih?`)) return;
-            const container = document.getElementById('bulkInputs');
-            container.innerHTML = '';
-            checked.forEach(cb => {
-                const inp = document.createElement('input');
-                inp.type = 'hidden';
-                inp.name = 'ids[]';
-                inp.value = cb.value;
-                container.appendChild(inp);
-            });
-            document.getElementById('bulkForm').submit();
-        };
-    </script>
+    <!-- Modal CSS moved to external file -->
+    <script src="../script/table-op.js?v=<?= time() ?>"></script>
 </body>
 </html>

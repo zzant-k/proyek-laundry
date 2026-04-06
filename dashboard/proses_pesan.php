@@ -1,26 +1,23 @@
-<?php
+﻿<?php
 /**
- * ═══════════════════════════════════════════════════════
- *  RUMAH LAUNDRY — Proses Pesan dari Website
- *  Menerima POST dari form front-end → INSERT ke transaksi
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ *  RUMAH LAUNDRY â€” Proses Pesan dari Website
+ *  Menerima POST dari form front-end â†’ INSERT ke transaksi
  *  Lalu redirect ke WhatsApp admin
- * ═══════════════════════════════════════════════════════
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
 require_once 'config.php';
 
-// Only accept POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: ../index.php');
     exit;
 }
 
-// Require login — cegah fake pelanggan
 if (!isset($_SESSION['id'])) {
     header('Location: ../login.php');
     exit;
 }
 
-// Get & validate input
 $nama      = trim($_POST['nama'] ?? '');
 $no_hp     = trim($_POST['no_hp'] ?? '');
 $alamat    = trim($_POST['alamat'] ?? '');
@@ -37,22 +34,18 @@ if (empty($nama) || empty($no_hp) || empty($alamat) || empty($pencucian) || empt
     exit;
 }
 
-// Auto-generate kode order
 $kode_order = 'RL-' . str_pad(rand(1000, 9999), 4, '0', STR_PAD_LEFT);
 
-// 1. Insert into TRANSAKSI table (with id_user link)
 $id_user = (int) $_SESSION['id'];
 $stmt1 = $conn->prepare("INSERT INTO transaksi (kode_order, nama, no_hp, alamat, pesan, jenis_pencucian, jenis_layanan, tanggal_penjemputan, jam_penjemputan, latitude, longitude, id_user) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 $stmt1->bind_param('sssssssssddi', $kode_order, $nama, $no_hp, $alamat, $pesan, $pencucian, $layanan, $tanggal, $jam, $latitude, $longitude, $id_user);
 
-// 2. Insert into PENGIRIMAN table (sertakan kode_order untuk linking)
 $stmt2 = $conn->prepare("INSERT INTO pengiriman (kode_order, nama, no_hp, alamat, pesan, jenis_pencucian, jenis_layanan, tanggal_pengiriman, jam_pengiriman, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 $stmt2->bind_param('sssssssssdd', $kode_order, $nama, $no_hp, $alamat, $pesan, $pencucian, $layanan, $tanggal, $jam, $latitude, $longitude);
 
 if ($stmt1->execute() && $stmt2->execute()) {
-    // Build WhatsApp message
     $waNumber = '6282295333441'; // Nomor WhatsApp admin
-    $waMessage = "*Pesanan Baru — Rumah Laundry*\n\n"
+    $waMessage = "*Pesanan Baru â€” Rumah Laundry*\n\n"
         . "*Kode Order:* {$kode_order}\n"
         . "*Nama:* {$nama}\n"
         . "*No HP:* {$no_hp}\n"
@@ -71,7 +64,6 @@ if ($stmt1->execute() && $stmt2->execute()) {
 
     $waUrl = 'https://wa.me/' . $waNumber . '?text=' . urlencode($waMessage);
 
-    // Redirect to WhatsApp
     header('Location: ' . $waUrl);
     exit;
 } else {

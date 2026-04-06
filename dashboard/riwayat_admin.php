@@ -1,17 +1,19 @@
-<?php
+﻿<?php
 /**
- * ═══════════════════════════════════════════════════════
- *  RUMAH LAUNDRY — Riwayat Transaksi (Admin)
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ *  RUMAH LAUNDRY â€” Riwayat Transaksi (Admin)
  *  Menampilkan pesanan Selesai dan Dibatalkan
- * ═══════════════════════════════════════════════════════
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
 require_once 'config.php';
-requireAdmin();
+if (!isLoggedIn()) {
+    header('Location: ../login.php');
+    exit;
+}
 
 $flash = getFlash();
 $adminNama = e($_SESSION['nama'] ?? 'Admin');
 
-// Filter: default semua riwayat (Selesai + Dibatalkan)
 $filterStatus = $_GET['filter_status'] ?? '';
 if ($filterStatus === 'Selesai') {
     $data = $conn->query("SELECT * FROM transaksi WHERE status = 'Selesai' ORDER BY id_laundry DESC");
@@ -26,16 +28,17 @@ if ($filterStatus === 'Selesai') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Riwayat Transaksi — Rumah Laundry Admin</title>
+    <title>Riwayat Transaksi â€” Rumah Laundry Admin</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/dashboard-modals.css?v=<?= time() ?>">
 </head>
 <body>
 
-    <!-- ═══════════ SIDEBAR ═══════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â•â• SIDEBAR â•â•â•â•â•â•â•â•â•â•â• -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar__header">
             <div class="sidebar__logo">
@@ -76,6 +79,11 @@ if ($filterStatus === 'Selesai') {
                     <div class="topbar__avatar"><?= strtoupper(substr($adminNama, 0, 1)) ?></div>
                     <span class="topbar__name"><?= $adminNama ?></span>
                     <i class="fas fa-chevron-down"></i>
+                    <div class="topbar__dropdown">
+                        <a href="../index.php"><i class="fas fa-globe"></i> Lihat Website</a>
+                        <div class="topbar__dropdown-divider"></div>
+                        <a href="logout.php" class="topbar__dropdown--danger"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
                 </div>
             </div>
         </header>
@@ -95,9 +103,19 @@ if ($filterStatus === 'Selesai') {
                         <p class="table-section__subtitle">Total <?= $data->num_rows ?> data</p>
                     </div>
                     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                        <!-- Tombol Pilih -->
+                        <button id="toggleSelectBtn" onclick="toggleSelectMode()"
+                            style="padding:10px 14px;border:1px solid transparent;border-radius:50px;
+                                   font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;
+                                   background:var(--bg);color:var(--text);transition:.35s cubic-bezier(.22,1,.36,1);"
+                            onmouseover="if(!this.classList.contains('active')) this.style.borderColor='var(--border)'"
+                            onmouseout="if(!this.classList.contains('active')) this.style.borderColor='transparent'">
+                            <i class="fas fa-check-square"></i> Pilih
+                        </button>
+                        <!-- Filter Status -->
                         <form method="GET" action="riwayat_admin.php" style="display:flex;gap:8px;align-items:center;">
                             <select name="filter_status" onchange="this.form.submit()"
-                                style="padding:8px 14px;border:2px solid #f0e4e7;border-radius:8px;font-family:'Inter',sans-serif;font-size:.85rem;outline:none;background:#fff;cursor:pointer;">
+                                style="padding:8px 14px;border:2px solid var(--border);border-radius:8px;font-family:'Inter',sans-serif;font-size:.85rem;outline:none;background:#fff;cursor:pointer;">
                                 <option value="">Semua Riwayat</option>
                                 <option value="Selesai" <?= $filterStatus==='Selesai'?'selected':'' ?>>Selesai</option>
                                 <option value="Dibatalkan" <?= $filterStatus==='Dibatalkan'?'selected':'' ?>>Dibatalkan</option>
@@ -111,24 +129,64 @@ if ($filterStatus === 'Selesai') {
                     </div>
                 </div>
 
+                <!-- Bulk Toolbar -->
+                <div id="bulkToolbar" style="
+                    display: none;
+                    background: #1F2937;
+                    border-radius: 12px;
+                    padding: 10px 20px;
+                    margin: 0 16px 12px;
+                    color: #fff;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 12px;
+                    width: calc(100% - 32px);">
+                    <span><strong id="selectedCount">0</strong> data dipilih</span>
+                    <div style="display:flex;gap:8px;">
+                        <form method="POST" action="config.php" id="bulkForm">
+                            <input type="hidden" name="bulkHapusRiwayat" value="1">
+                            <div id="bulkInputs"></div>
+                            <button type="button" onclick="confirmBulkDelete()"
+                                style="background:#fff;color:#111827;border:none;padding:8px 16px;
+                                       border-radius:8px;font-weight:700;cursor:pointer;font-size:.85rem;
+                                       display:inline-flex;align-items:center;gap:6px;">
+                                <i class="fas fa-trash-alt"></i> Hapus
+                            </button>
+                        </form>
+                        <button onclick="clearSelection()"
+                            style="background:rgba(255,255,255,.15);color:#fff;border:none;padding:8px 14px;
+                                   border-radius:8px;cursor:pointer;font-size:.85rem;">
+                            Batal
+                        </button>
+                    </div>
+                </div>
+
                 <div class="table-wrapper">
-                    <table class="data-table">
+                    <table class="data-table" id="riwayatTable">
                         <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Kode Order</th>
-                                <th>Nama</th>
-                                <th>No HP</th>
-                                <th>Jenis Pencucian</th>
-                                <th>Jenis Layanan</th>
-                                <th>Tgl Jemput</th>
-                                <th>Status</th>
+                            <tr style="background-color: #1F2937;">
+                                <th class="cb-col" style="width:35px;text-align:center;">
+                                    <input type="checkbox" id="selectAll" title="Pilih Semua"
+                                        style="width:16px;height:16px;cursor:pointer;accent-color:#fff;">
+                                </th>
+                                <th style="background-color:#1F2937;color:#fff;">No</th>
+                                <th style="background-color:#1F2937;color:#fff;">Kode Order</th>
+                                <th style="background-color:#1F2937;color:#fff;">Nama</th>
+                                <th style="background-color:#1F2937;color:#fff;">No HP</th>
+                                <th style="background-color:#1F2937;color:#fff;">Jenis Pencucian</th>
+                                <th style="background-color:#1F2937;color:#fff;">Jenis Layanan</th>
+                                <th style="background-color:#1F2937;color:#fff;">Tgl Jemput</th>
+                                <th style="background-color:#1F2937;color:#fff;">Status</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if ($data->num_rows > 0): ?>
                                 <?php $no = 1; while($row = $data->fetch_assoc()): ?>
                                     <tr>
+                                        <td class="cb-col" style="text-align:center;">
+                                            <input type="checkbox" class="row-cb" value="<?= $row['id_laundry'] ?>"
+                                                style="width:16px;height:16px;cursor:pointer;accent-color:#1F2937;">
+                                        </td>
                                         <td><?= $no++ ?></td>
                                         <td>
                                             <code style="background:var(--bg);padding:3px 8px;border-radius:4px;font-size:.8rem;font-weight:600;">
@@ -152,7 +210,7 @@ if ($filterStatus === 'Selesai') {
                                 <?php endwhile; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="8" style="text-align:center;padding:40px;color:var(--text-muted);">
+                                    <td colspan="9" style="text-align:center;padding:40px;color:var(--text-muted);">
                                         <i class="fas fa-inbox" style="font-size:2rem;display:block;margin-bottom:10px;"></i>
                                         Belum ada riwayat transaksi
                                     </td>
@@ -166,16 +224,7 @@ if ($filterStatus === 'Selesai') {
         </main>
     </div>
 
-    <script src="dashboard.js"></script>
-
-    <style>
-    /* Badge styles for riwayat */
-    .badge { display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:100px;font-size:.75rem;font-weight:600;white-space:nowrap; }
-    .badge__dot { width:6px;height:6px;border-radius:50%;display:inline-block; }
-    .badge--done { background:#d1fae5;color:#059669; }
-    .badge--done .badge__dot { background:#059669; }
-    .badge--cancelled { background:#fee2e2;color:#dc2626; }
-    .badge--cancelled .badge__dot { background:#dc2626; }
-    </style>
+    <script src="../script/dashboard.js"></script>
+    <script src="../script/riwayat_admin.js?v=<?= time() ?>"></script>
 </body>
 </html>

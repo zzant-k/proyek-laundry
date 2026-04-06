@@ -1,15 +1,14 @@
-<?php
+﻿<?php
 /**
- * ═══════════════════════════════════════════════════════
- *  RUMAH LAUNDRY — Pesan Pelanggan (List Data)
- * ═══════════════════════════════════════════════════════
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+ *  RUMAH LAUNDRY â€” Pesan Pelanggan (List Data)
+ * â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
  */
 require_once 'config.php';
-requireAdmin();
+if (!isset($_SESSION['id'])) { header('Location: ../login.php'); exit; }
 
 $adminNama = e($_SESSION['nama'] ?? 'Admin');
 
-// Fetch all messages from pengiriman table
 $data = $conn->query("SELECT * FROM pengiriman ORDER BY pesan DESC");
 ?>
 <!DOCTYPE html>
@@ -17,12 +16,12 @@ $data = $conn->query("SELECT * FROM pengiriman ORDER BY pesan DESC");
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pesan Masuk — Rumah Laundry Admin</title>
+    <title>Pesan Masuk â€” Rumah Laundry Admin</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
 </head>
 <body>
 
@@ -41,6 +40,11 @@ $data = $conn->query("SELECT * FROM pengiriman ORDER BY pesan DESC");
                 <li><a href="table-op.php" class="sidebar__link"><i class="fas fa-receipt"></i><span>Transaksi</span></a></li>
                 <li><a href="riwayat_admin.php" class="sidebar__link"><i class="fas fa-clock-rotate-left"></i><span>Riwayat Transaksi</span></a></li>
                 <li><a href="pesan.php" class="sidebar__link active"><i class="fas fa-envelope"></i><span>Pesan Masuk</span></a></li>
+            </ul>
+            <span class="sidebar__label">LAINNYA</span>
+            <ul class="sidebar__menu">
+                <li><a href="../index.php" class="sidebar__link"><i class="fas fa-globe"></i><span>Lihat Website</span></a></li>
+                <li><a href="logout.php" class="sidebar__link sidebar__link--logout" onclick="return confirm('Anda yakin ingin keluar?')"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
             </ul>
         </nav>
     </aside>
@@ -64,15 +68,15 @@ $data = $conn->query("SELECT * FROM pengiriman ORDER BY pesan DESC");
                 <div class="table-wrapper">
                     <table class="data-table">
                         <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Nama</th>
-                                <th>HP</th>
-                                <th>Alamat</th>
-                                <th>Pesan</th>
-                                <th>Cuci</th>
-                                <th>Layanan</th>
-                                <th>Tanggal</th>
+                            <tr style="background-color: #1F2937; color: #ffffff !important;">
+                                <th style="background-color: #1F2937; color: #ffffff !important;">No</th>
+                                <th style="background-color: #1F2937; color: #ffffff !important;">Nama</th>
+                                <th style="background-color: #1F2937; color: #ffffff !important;">HP</th>
+                                <th style="background-color: #1F2937; color: #ffffff !important;">Alamat</th>
+                                <th style="background-color: #1F2937; color: #ffffff !important;">Pesan</th>
+                                <th style="background-color: #1F2937; color: #ffffff !important;">Cuci</th>
+                                <th style="background-color: #1F2937; color: #ffffff !important;">Layanan</th>
+                                <th style="background-color: #1F2937; color: #ffffff !important;">Tanggal</th>
                             </tr>
                         </thead>
                         <tbody>
