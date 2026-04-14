@@ -1628,7 +1628,7 @@ img {
 
 .contact__item {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 16px;
 }
 
@@ -1640,8 +1640,9 @@ img {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #fff;
+    color: white;
     font-size: 1.1rem;
+    flex-shrink: 0;
 }
 
 .contact__text span {
