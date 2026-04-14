@@ -169,7 +169,7 @@ session_start();
                         <i class="fas fa-bed"></i>
                     </div>
                     <h3 class="service-card__title">Bed Cover</h3>
-                    <p class="service-card__desc">Pembersihan khusus untuk bedcover menggunakan mesin dan deterjen yang sesuai agar kotoran, debu, dan bau hilang tanpa merusak bahan.</p>
+                    <p class="service-card__desc">Pembersihan bedcover dengan mesin dan deterjen khusus untuk menghilangkan kotoran.</p>
                     <div class="service-card__price">Mulai <strong>Rp 25.000</strong>/pcs</div>
                     <a href="#contact" class="service-card__link">Pesan Sekarang <i class="fas fa-arrow-right"></i></a>
                 </div>
@@ -319,7 +319,7 @@ session_start();
             <div class="section-header" data-animate="fade-up">
                 <span class="section-badge">Lacak Cucian</span>
                 <h2 class="section-title">Pantau <span class="text-gradient">Status Cucian</span> Anda</h2>
-                <p class="section-subtitle">Masukkan kode order Anda untuk mengetahui status cucian secara real-time.
+                <p class="section-subtitle">kode order untuk mengetahui status anda cucian secara real-time.
                 </p>
             </div>
 

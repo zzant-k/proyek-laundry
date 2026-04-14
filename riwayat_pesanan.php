@@ -53,13 +53,7 @@ foreach (array_slice($parts, 0, 2) as $p) $initials .= strtoupper(substr($p, 0, 
 </head>
 <body>
 
-<!-- ── Topbar ── -->
-<div class="topbar">
-  <a href="index.php" class="topbar__back"><i class="fas fa-arrow-left"></i> Kembali</a>
-  <a href="index.php" class="topbar__brand">
-    <img src="assets/img/RL.png" alt="Logo"> Rumah Laundry
-  </a>
-</div>
+
 
 <div class="page-wrapper">
 
@@ -76,6 +70,7 @@ foreach (array_slice($parts, 0, 2) as $p) $initials .= strtoupper(substr($p, 0, 
       <h1>Riwayat Pesanan</h1>
       <p>Semua pesanan Anda di Rumah Laundry</p>
     </div>
+    <a href="index.php" class="topbar__back"><i class="fas fa-arrow-left"></i> Kembali</a>
   </div>
 
 

@@ -45,6 +45,12 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('scroll', highlightNav, { passive: true });
 
     /* ── Smooth Scroll ── */
+    function smoothScrollTo(el) {
+        const navH = navbar.offsetHeight;
+        const top = el.getBoundingClientRect().top + window.scrollY - navH - 20;
+        window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+    }
+
     navLinks.forEach(link => {
         link.addEventListener('click', e => {
             const href = link.getAttribute('href');
@@ -52,9 +58,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 const target = document.querySelector(href);
                 if (target) {
                     e.preventDefault();
-                    target.scrollIntoView({ behavior: 'smooth' });
+                    smoothScrollTo(target);
                     navMenu.classList.remove('open');
                     navToggle.classList.remove('active');
+                }
+            }
+        });
+    });
+
+    /* ── All other in-page anchor links (hero buttons, service cards, etc.) ── */
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+        if (link.closest('.navbar__menu') || link.closest('.footer')) return;
+        link.addEventListener('click', e => {
+            const href = link.getAttribute('href');
+            if (href.length > 1) {
+                const target = document.querySelector(href);
+                if (target) {
+                    e.preventDefault();
+                    smoothScrollTo(target);
                 }
             }
         });
@@ -275,7 +296,7 @@ document.addEventListener('DOMContentLoaded', () => {
         link.addEventListener('click', e => {
             e.preventDefault();
             const target = document.querySelector(link.getAttribute('href'));
-            if (target) target.scrollIntoView({ behavior: 'smooth' });
+            if (target) smoothScrollTo(target);
         });
     });
 

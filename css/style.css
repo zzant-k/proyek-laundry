@@ -682,16 +682,18 @@ img {
 }
 
 .service-card {
-    background: var(--bg-white);
-    border: 1px solid #f0e4e7;
+    background: linear-gradient(145deg, #ffffff 0%, #fdf5f7 50%, #faf0f2 100%);
+    border: 1px solid rgba(216, 167, 177, .18);
     border-radius: var(--radius-lg);
     padding: 36px 28px;
     text-align: center;
-    transition: transform .45s var(--ease-slide), box-shadow .45s var(--ease-slide), border-color .35s ease;
+    transition: transform .45s var(--ease-slide), box-shadow .45s var(--ease-slide), border-color .35s ease, background .5s ease;
     position: relative;
     overflow: hidden;
+    backdrop-filter: blur(8px);
 }
 
+/* ── top gradient bar ── */
 .service-card::before {
     content: '';
     position: absolute;
@@ -704,14 +706,75 @@ img {
     transition: transform .45s var(--ease-slide);
 }
 
+/* ── animated shimmer overlay ── */
+.service-card::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -60%;
+    width: 40%;
+    height: 200%;
+    background: linear-gradient(
+        105deg,
+        transparent 30%,
+        rgba(216, 167, 177, .12) 48%,
+        rgba(255, 255, 255, .25) 50%,
+        rgba(216, 167, 177, .12) 52%,
+        transparent 70%
+    );
+    transform: skewX(-25deg);
+    opacity: 0;
+    transition: opacity .4s ease;
+    pointer-events: none;
+}
+
 .service-card:hover::before {
     transform: scaleX(1);
 }
 
+.service-card:hover::after {
+    opacity: 1;
+    animation: cardShimmer 1.8s ease-in-out infinite;
+}
+
+@keyframes cardShimmer {
+    0%   { left: -60%; }
+    100% { left: 140%; }
+}
+
 .service-card:hover {
-    transform: translateY(-6px);
-    box-shadow: var(--shadow-lg);
-    border-color: transparent;
+    transform: translateY(-8px);
+    box-shadow:
+        0 12px 40px rgba(198, 122, 137, .18),
+        0 0 0 1px rgba(198, 122, 137, .08),
+        inset 0 1px 0 rgba(255, 255, 255, .8);
+    border-color: rgba(198, 122, 137, .25);
+    background: linear-gradient(145deg, #ffffff 0%, #fef8f9 40%, #f9eef0 100%);
+}
+
+/* ── unique accent glow per card ── */
+.service-card:nth-child(1):hover {
+    box-shadow:
+        0 12px 40px rgba(198, 122, 137, .20),
+        0 0 30px rgba(216, 167, 177, .12);
+}
+
+.service-card:nth-child(2):hover {
+    box-shadow:
+        0 12px 40px rgba(180, 130, 160, .20),
+        0 0 30px rgba(200, 150, 180, .12);
+}
+
+.service-card:nth-child(3):hover {
+    box-shadow:
+        0 12px 40px rgba(168, 140, 170, .20),
+        0 0 30px rgba(190, 155, 185, .12);
+}
+
+.service-card:nth-child(4):hover {
+    box-shadow:
+        0 12px 40px rgba(185, 125, 145, .20),
+        0 0 30px rgba(210, 145, 160, .12);
 }
 
 .service-card__icon {

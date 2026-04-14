@@ -113,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <!-- ═══ IMAGE PANEL (left) ═══ -->
   <div class="img-panel">
     <div class="img-panel__img-wrap">
-      <img class="img-panel__img" src="assets/img/gambar login.jpg" alt="Rumah Laundry — Layanan Premium"/>
+      <img class="img-panel__img" src="assets/img/gambar login.png" alt="Rumah Laundry — Layanan Premium"/>
 
       <div class="img-panel__body">
        
