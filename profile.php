@@ -94,12 +94,7 @@ foreach (array_slice($nameParts, 0, 2) as $part) {
     <!-- Left Card: Profile & Stats -->
     <div class="profile-hero animate-in" style="background: var(--card); overflow: visible; position: relative; height: 100%;">
 
-      <!-- Action Buttons Top Right (Fixed) -->
-      <div style="position: fixed; right: 20px; top: 20px; z-index: 10;">
-        <button type="button" class="btn-edit" id="btnEdit">
-          <i class="fas fa-pen"></i> Edit Profil
-        </button>
-      </div>
+      <!-- Action Buttons Top Left (Fixed) -->
       <div style="position: fixed; left: 20px; top: 20px; z-index: 10;">
         <a href="index.php" class="topbar__back"><i class="fas fa-arrow-left"></i> Kembali</a>
       </div>
@@ -154,7 +149,7 @@ foreach (array_slice($nameParts, 0, 2) as $part) {
 
         <h1 class="profile-name"><?= e($profile['nama']) ?></h1>
         
-        <div class="profile-stats" style="margin-top: auto; padding-top: 24px;">
+        <div class="profile-stats" style="margin-top: auto; padding-top: 24px; align-items: center;">
           <div class="profile-stat">
             <span class="profile-stat__value"><?= $orders->num_rows ?></span>
             <span class="profile-stat__label">Pesanan</span>
@@ -162,6 +157,11 @@ foreach (array_slice($nameParts, 0, 2) as $part) {
           <div class="profile-stat">
             <span class="profile-stat__value"><i class="fas fa-check-circle" style="color:#22c55e;font-size:16px;"></i></span>
             <span class="profile-stat__label">Terverifikasi</span>
+          </div>
+          <div class="profile-stat" style="margin-left: 16px; display: flex; align-items: center; justify-content: center;">
+            <button type="button" id="btnEdit" title="Edit Profil" style="background: var(--accent-light); border: 1.5px solid var(--border); border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: var(--accent); cursor: pointer; transition: var(--transition); box-shadow: 0 2px 8px rgba(198,122,137,0.15);" onmouseover="this.style.background='var(--accent)'; this.style.color='#fff'; this.style.transform='scale(1.05)';" onmouseout="this.style.background='var(--accent-light)'; this.style.color='var(--accent)'; this.style.transform='scale(1)';">
+              <i class="fas fa-pen" style="font-size: 18px;"></i>
+            </button>
           </div>
         </div>
       </div>
